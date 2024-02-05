@@ -1,49 +1,58 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import "./index.css";
 
-const TextBoxApp = () => {
+const InputOutputBox = () => {
   const [inputText, setInputText] = useState('');
   const [displayText, setDisplayText] = useState('');
-  const [textareaHeight, setTextareaHeight] = useState(1); 
+  const textAreaRef = useRef(null); 
 
   const handleInputChange = (e) => {
     setInputText(e.target.value);
-
-    const height = e.target.scrollHeight; 
-    const rowHeight = 15; 
-    const trows = Math.ceil(height / rowHeight) - 1; 
-    
-    if (trows > textareaHeight) { 
-      setTextareaHeight(trows); 
-    } else if(inputText === ''){
-      setTextareaHeight(1);
-    }
   };
 
-  const handleDisplayClick = () => {
+  const handleDisplay = () => {
     setDisplayText(inputText);
     setInputText('');
   };
 
+  const resizeTextArea = () => {
+    textAreaRef.current.style.height = "auto";
+    textAreaRef.current.style.height = textAreaRef.current.scrollHeight + "px";
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleDisplay();
+    }
+  };
+
+  useEffect(resizeTextArea, [inputText]);
 
   return (
-    <div className='container'>
-      <div className="output">
-        <textarea value={displayText} readOnly className="output-box"/>
-      </div>  
-      <div className="input">
-        <textarea
-          type="text" 
-          value={inputText} 
-          onChange={handleInputChange} 
-          placeholder='Type here...'
-          className="input-box"
-          rows={textareaHeight}
-        />
-        <button onClick={handleDisplayClick} className="send-button">Send</button>
+    <body>
+      <div className='header'>header</div>
+      <div className='container'>
+        <div className="output">
+          <textarea value={displayText} readOnly className="output-box"/>
+        </div>  
+        <div className="input">
+          <textarea
+            type="text" 
+            value={inputText} 
+            onChange={handleInputChange} 
+            placeholder='Type here...'
+            className="input-box"
+            rows={1}
+            ref={textAreaRef}
+            onKeyDown={handleKeyDown}
+          />
+          <button onClick={handleDisplay} className="send-button">Send </button>
+          
+        </div>
       </div>
-    </div>
+    </body>
   );
 };
 
-export default TextBoxApp;
+export default InputOutputBox;
