@@ -2,8 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors'); // Import cors
 const OpenAI = require('openai');
+const { OPENAI_API_KEY } = require('./config'); // Import API key from config.js
 
-const OPENAI_API_KEY = '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'; // Replace with your actual OpenAI API key
+
 
 const app = express();
 const port = 3001;
