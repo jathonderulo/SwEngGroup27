@@ -1,48 +1,54 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors'); // Import cors
-const OpenAI = require('openai');
+// Import required modules
+const express = require('express'); // Node.js framework for building RESTful APIs
+const bodyParser = require('body-parser'); // Parses incoming request bodies
+const cors = require('cors'); // Enables Cross-Origin Resource Sharing
+const OpenAI = require('openai'); // OpenAI API wrapper
+
 const { OPENAI_API_KEY } = require('./config'); // Import API key from config.js
 
-
-
+// Initialize Express application
 const app = express();
-const port = 3001;
+const port = 3001; // Define port number
 
+// Initialize OpenAI client with API ey
 const openai = new OpenAI({
-    apiKey: OPENAI_API_KEY, // Add your OpenAI API key here
+    apiKey: OPENAI_API_KEY, 
   });
-  
 
+
+// Setup other bits
 app.use(bodyParser.json());
-
-
-
 app.use(cors()); // Enable CORS for all routes
 
-async function chatWithOpenAI() {
-    try {
-      const completion = await openai.chat.completions.create({
-        messages: [{ role: "system", content: "You are a helpful assistant." }],
-        model: "gpt-3.5-turbo",
-      });
-      console.log(completion.choices[0].message.content);
-    } catch (error) {
-      console.error('Error:', error.message);
-    }
-  }
 
-  chatWithOpenAI();
+// Function to initiate conversation with OpenAI
+// This currently serves as a test to see if we can communicate with the API
+// Automatically runs when we run `node index.js`
+async function chatWithOpenAI() { 
+    try {
+        // Create a conversation with a system message
+        const completion = await openai.chat.completions.create({
+            messages: [{ role: "system", content: "You are a helpful assistant." }],
+            model: "gpt-3.5-turbo",
+        });
+        console.log(completion.choices[0].message.content);
+    } catch (error) {
+        console.error('Error:', error.message);
+    }
+    }
+
+    chatWithOpenAI();
 
 
 // Handle incoming chat messages
 app.post('/chat', async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message } = req.body; // Extract message from request body
 
     // Send the user's message to the OpenAI API
     const completion = await openai.chat.completions.create({
-        messages: [{ role: "system", content: message }],
+        messages: [{ role: "system", content: "You are a helpful assistant." },
+        { role: "user", content: message }],
         model: "gpt-3.5-turbo",
       });
 
