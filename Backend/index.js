@@ -43,7 +43,8 @@ async function chatWithOpenAI() {
 // Handle incoming chat messages
 app.post('/chat', async (req, res) => {
   try {
-    const { message } = req.body; // Extract message from request body
+    // Extract message from request body, and reformat the prompt accordingly
+    const { message } = reformatPrompt(req.body); 
 
     // Send the user's message to the OpenAI API
     const completion = await openai.chat.completions.create({
@@ -62,6 +63,11 @@ app.post('/chat', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// Sample prompt engineering using a hard coded persona
+function reformatPrompt(prompt) {
+  return "Answer the following question from the point of view of a 36-53 year old male: " + prompt;
+}
 
 // Start the server
 app.listen(port, () => {
