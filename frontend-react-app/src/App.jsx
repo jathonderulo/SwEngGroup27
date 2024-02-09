@@ -12,6 +12,7 @@ const InputOutputBox = () => {
 
   const handleSend = async() => {
     try {
+      console.log(inputText);
       const response = await fetch('http://localhost:3001/chat', {
         method: 'POST',
         headers: {

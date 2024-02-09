@@ -54,7 +54,7 @@ app.post('/chat', async (req, res) => {
 
     // Send the user's message to the OpenAI API
     const completion = await openai.chat.completions.create({
-        messages: [{ role: "system", content: "You are a helpful assistant." },
+        messages: [{ role: "system", content: message },
         { role: "user", content: message }],
         model: "gpt-3.5-turbo",
       });
