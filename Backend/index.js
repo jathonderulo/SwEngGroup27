@@ -42,6 +42,8 @@ async function chatWithOpenAI() {
 // Route to handle GET requests
 app.get('/example', (req, res) => {
   res.send('This is an example GET request response.');
+  console.log(`Get request received on port ${port}`);
+  
 });
 
 // Handle incoming chat messages
