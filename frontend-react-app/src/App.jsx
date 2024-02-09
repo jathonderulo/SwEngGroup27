@@ -10,8 +10,27 @@ const InputOutputBox = () => {
     setInputText(e.target.value);
   };
 
-  const handleDisplay = () => {
-    setDisplayText(inputText);
+  const handleSend = async() => {
+    try {
+      const response = await fetch('http://localhost:3001/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ input: inputText })
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      setDisplayText(data.output);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setDisplayText('Error: Unable to fetch data from the server');
+    }
+
     setInputText('');
   };
 
@@ -23,7 +42,7 @@ const InputOutputBox = () => {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleDisplay();
+      handleSend();
     }
   };
 
@@ -47,7 +66,7 @@ const InputOutputBox = () => {
             ref={textAreaRef}
             onKeyDown={handleKeyDown}
           />
-          <button onClick={handleDisplay} className="send-button">Send </button>
+          <button onClick={handleSend} className="send-button">Send </button>
           
         </div>
       </div>
