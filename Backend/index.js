@@ -24,14 +24,16 @@ app.use(cors()); // Enable CORS for all routes
 // Function to initiate conversation with OpenAI
 // This currently serves as a test to see if we can communicate with the API
 // Automatically runs when we run `node index.js`
-async function chatWithOpenAI(text) { 
+async function chatWithOpenAI(text, messageFromAPI) { 
     try {
         // Create a conversation with a system message
         const completion = await openai.chat.completions.create({
-            messages: [{ role: "system", content: "You are a helpful assistant." }],
+            messages: [{ role: "system", content: text }],
             model: "gpt-3.5-turbo",
         });
         console.log(completion.choices[0].message.content);
+        messageFromAPI = completion.choices[0].message.content;
+        
     } catch (error) {
         console.error('Error:', error.message);
     }
@@ -48,9 +50,12 @@ app.get('/example', (req, res) => {
 app.post('/chat', async (req, res) => {
   try {
     // Extract message from request body, and reformat the prompt accordingly
-    const { message } = req.body; 
+    const message = JSON.stringify(req.body);
+    //console.log(message) ;
     // Send the chat response back to the client
-    res.json({ message: chatWithOpenAI(message) });
+    var messageFromAPI;
+    chatWithOpenAI(message, messageFromAPI);
+    res.json({ message: messageFromAPI });
   } catch (error) {
     console.error('Error processing chat message:', error);
     res.status(500).json({ error: 'Internal Server Error' });

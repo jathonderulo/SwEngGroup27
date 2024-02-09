@@ -26,7 +26,8 @@ const InputOutputBox = () => {
       }
 
       const data = await response.json();
-      setDisplayText(data.output);
+      console.log((data.message));
+      setDisplayText(data.message);
     } catch (error) {
       console.error('Error fetching data:', error);
       setDisplayText('Error: Unable to fetch data from the server');
