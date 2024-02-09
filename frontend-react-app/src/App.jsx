@@ -20,7 +20,7 @@ const InputOutputBox = () => {
         },
         body: JSON.stringify({ input: inputText })
       });
-
+      
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
