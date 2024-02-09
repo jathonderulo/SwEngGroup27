@@ -10,7 +10,7 @@ const { OPENAI_API_KEY } = require('./config'); // Import API key from config.js
 const app = express();
 const port = 3001; // Define port number
 
-// Initialize OpenAI client with API ey
+// Initialize OpenAI client with API Key
 const openai = new OpenAI({
     apiKey: OPENAI_API_KEY, 
   });
@@ -31,9 +31,7 @@ async function chatWithOpenAI(text) {
             messages: [{ role: "system", content: text }],
             model: "gpt-3.5-turbo",
         });
-        //console.log(completion.choices[0].message.content);
-        return completion.choices[0].message.content;
-        
+        return completion.choices[0].message.content;  
     } catch (error) {
         console.error('Error:', error.message);
     }
@@ -51,7 +49,7 @@ app.post('/chat', async (req, res) => {
   try {
     // Extract message from request body, and reformat the prompt accordingly
     const message = JSON.stringify(req.body);
-    //console.log(message) ;
+
     // Send the chat response back to the client
     const responseFromAI = await chatWithOpenAI(message);
     console.log(responseFromAI);
@@ -61,12 +59,6 @@ app.post('/chat', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-/*
-// Sample prompt engineering using a hard coded persona
-function reformatPrompt(prompt) {
-  return "Answer the following question from the point of view of a 36-53 year old male: " + prompt.message;
-}*/
 
 // Start the server
 app.listen(port, () => {
