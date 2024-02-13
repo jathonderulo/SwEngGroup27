@@ -1,66 +1,64 @@
-// Import required modules
-const express = require('express'); // Node.js framework for building RESTful APIs
-const bodyParser = require('body-parser'); // Parses incoming request bodies
-const cors = require('cors'); // Enables Cross-Origin Resource Sharing
-const OpenAI = require('openai'); // OpenAI API wrapper
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const OpenAI = require('openai');
 
-const { OPENAI_API_KEY } = require('./config'); // Import API key from config.js
+const { OPENAI_API_KEY } = require('./config');
 
-// Initialize Express application
 const app = express();
-const port = 3001; // Define port number
+const port = 3001;
 
-// Initialize OpenAI client with API Key
 const openai = new OpenAI({
-    apiKey: OPENAI_API_KEY, 
-  });
-
-
-// Setup other bits
-app.use(bodyParser.json());
-app.use(cors()); // Enable CORS for all routes
-
-
-// Function to initiate conversation with OpenAI
-// This currently serves as a test to see if we can communicate with the API
-// Automatically runs when we run `node index.js`
-async function chatWithOpenAI(text) { 
-    try {
-        // Create a conversation with a system message
-        const completion = await openai.chat.completions.create({
-            messages: [{ role: "system", content: text }],
-            model: "gpt-3.5-turbo",
-        });
-        return completion.choices[0].message.content;  
-    } catch (error) {
-        console.error('Error:', error.message);
-    }
-    }
-
-// Route to handle GET requests
-app.get('/example', (req, res) => {
-  res.send('This is an example GET request response.');
-  console.log(`Get request received on port ${port}`);
-  
+  apiKey: OPENAI_API_KEY,
 });
 
-// Handle incoming chat messages
+app.use(bodyParser.json());
+app.use(cors());
+
+// Store the conversation state
+let conversationHistory = [];
+
+async function chatWithOpenAI(text, sessionHistory) {
+  try {
+    // Include a system message or user message based on sessionHistory being empty or not
+    const messages = sessionHistory.length > 0 ? sessionHistory : [{ role: "system", content: "Start a new conversation" }];
+    messages.push({ role: "user", content: text }); // Add the new user message to the conversation history
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: messages,
+    });
+
+    // Add the AI's response to the conversation history
+    messages.push({ role: "assistant", content: completion.choices[0].message.content });
+
+    return {
+      content: completion.choices[0].message.content,
+      conversationHistory: messages // Return the updated conversation history
+    };
+  } catch (error) {
+    console.error('Error:', error);
+    throw error; // Ensure error handling in the calling function
+  }
+}
+
+// In your endpoint:
 app.post('/chat', async (req, res) => {
   try {
-    // Extract message from request body, and reformat the prompt accordingly
-    const message = JSON.stringify(req.body);
+    const { message, conversationHistory } = req.body; // Get conversationHistory from the request body
 
-    // Send the chat response back to the client
-    const responseFromAI = await chatWithOpenAI(message);
-    console.log(responseFromAI);
-    res.json({ message: responseFromAI });
+    // Ensure that conversationHistory is an array
+    const validHistory = Array.isArray(conversationHistory) ? conversationHistory : [];
+
+    const responseFromAI = await chatWithOpenAI(message, validHistory);
+    console.log(responseFromAI.content);
+    res.json({ message: responseFromAI.content, conversationHistory: responseFromAI.conversationHistory });
   } catch (error) {
     console.error('Error processing chat message:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
