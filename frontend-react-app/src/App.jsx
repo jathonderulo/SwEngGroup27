@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
+import ChatHistory from "./components/ChatHistory";
 import "./index.css";
 
 const InputOutputBox = () => {
   const [inputText, setInputText] = useState('');
-  const [displayText, setDisplayText] = useState('');
+  // const [displayText, setDisplayText] = useState('');
+  const [messages, setMessages] = useState([]);
   const textAreaRef = useRef(null); 
 
   const handleInputChange = (e) => {
@@ -11,7 +13,14 @@ const InputOutputBox = () => {
   };
 
   const handleDisplay = () => {
-    setDisplayText(inputText);
+    // setDisplayText(inputText);
+    const newMessage = {
+      id: crypto.randomUUID(),
+      sender: "User",
+      text: inputText
+    };
+
+    setMessages([...messages, newMessage]);
     setInputText('');
   };
 
@@ -33,9 +42,10 @@ const InputOutputBox = () => {
     <body>
       <div className='header'>header</div>
       <div className='container'>
-        <div className="output">
+        {/* <div className="output">
           <textarea value={displayText} readOnly className="output-box"/>
-        </div>  
+        </div>   */}
+        <ChatHistory messages={messages} />
         <div className="input">
           <textarea
             type="text" 

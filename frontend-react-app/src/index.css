@@ -20,13 +20,36 @@ body {
   flex-direction: column;
 }
 
-.output{
+/* .output{
   width: 100%;
   flex-grow: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #f0f0f0;
+} */
+
+.chat-history {
+  color: white;
+  background: #333333;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.chat-message {
+  background: #242323;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  min-width: 10%;
+  max-width: 90%;
+  word-wrap: break-word;
+}
+
+.chat-message:hover {
+  background: #2d2c2c;
 }
 
 .input {
