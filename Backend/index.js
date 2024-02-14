@@ -18,23 +18,52 @@ app.use(cors());
 // Store the conversation state
 let conversationHistory = [];
 
-async function chatWithOpenAI(text, sessionHistory) {
+// Create a global assistant and thread
+let assistant, thread;
+
+// NB This currently throws 401 errors
+async function initialiseAssistant() {
+  // Create a global assistant
+  assistant = await openai.beta.assistants.create({
+    name: "Survey Assistant",
+    instructions: "You are an assistant that answers questions people ask surrounding the results to a survey",
+    tools: [{ type: "code_interpreter" }],
+    model: "gpt-3.5-turbo"
+  });
+
+  // Create a global thread
+  thread = await openai.beta.threads.create();
+}
+
+async function chatWithOpenAI(text) {
   try {
-    // Include a system message or user message based on sessionHistory being empty or not
-    const messages = sessionHistory.length > 0 ? sessionHistory : [{ role: "system", content: "Start a new conversation" }];
-    messages.push({ role: "user", content: text }); // Add the new user message to the conversation history
+    // Add the user message to the global thread
+    const message = await openai.beta.threads.messages.create(
+      thread.id,
+      { role: "user", content: text }
+    );
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: messages,
-    });
+    // Run the updated thread on the global assistant
+    const run = await openai.beta.threads.runs.create(
+      thread.id,
+      { assistant_id: assistant.id }
+    );
 
-    // Add the AI's response to the conversation history
-    messages.push({ role: "assistant", content: completion.choices[0].message.content });
+    // Wait until the run has completed
+    // There is probably a more elegant way of doing this than busy waiting
+    while(run.status != 'completed') {
+      if(run.status === ('failed' || 'cancelled' || 'expired')) {
+        throw("Run "+run.status);
+      }
+    }
+
+    // Retreive the updated message list
+    const messageList = await openai.beta.threads.messages.list(
+      thread.id
+    );
 
     return {
-      content: completion.choices[0].message.content,
-      conversationHistory: messages // Return the updated conversation history
+      content: messageList.data[0].content[0], // Return the assistant's response
     };
   } catch (error) {
     console.error('Error:', error);
@@ -42,17 +71,17 @@ async function chatWithOpenAI(text, sessionHistory) {
   }
 }
 
+// Initialise the global assistant and thread upon startup
+initialiseAssistant();
+
 // In your endpoint:
 app.post('/chat', async (req, res) => {
   try {
-    const { message, conversationHistory } = req.body; // Get conversationHistory from the request body
+    const { message } = req.body; // Get message from the request body
 
-    // Ensure that conversationHistory is an array
-    const validHistory = Array.isArray(conversationHistory) ? conversationHistory : [];
-
-    const responseFromAI = await chatWithOpenAI(message, validHistory);
+    const responseFromAI = await chatWithOpenAI(message);
     console.log(responseFromAI.content);
-    res.json({ message: responseFromAI.content, conversationHistory: responseFromAI.conversationHistory });
+    res.json({ message: responseFromAI.content });
   } catch (error) {
     console.error('Error processing chat message:', error);
     res.status(500).json({ error: error.message });
