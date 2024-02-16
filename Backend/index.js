@@ -27,7 +27,7 @@ async function initialiseAssistant() {
   assistant = await openai.beta.assistants.create({
     name: "Survey Assistant",
     instructions: "You are an assistant that answers questions people ask surrounding the results to a survey",
-    tools: [{ type: "code_interpreter" }],
+    tools: [{ type: "code_interpreter" }, { type: "retrieval" }],
     model: "gpt-3.5-turbo"
   });
 
