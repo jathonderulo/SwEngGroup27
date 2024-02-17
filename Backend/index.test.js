@@ -52,23 +52,8 @@ describe('POST /chat', () => {
   });
 });
 
-/*
-// index.test.js
-const { spawnSync } = require('child_process');
 
-describe('index.js', () => {
-  it('prints "Server is running on port 3001" to the console', () => {
-    // Execute the script using spawnSync
-    const { stdout } = spawnSync('node', ['index.js']);
-    
-    // Extract output from stdout buffer
-    const output = stdout.toString().trim();
-
-    // Expect output to match the expected message
-    expect(output).toBe("Server is running on port 3001");
-  });
+afterAll(done => {
+    server.close();
+    done();
 });
-
-
-
-*/
