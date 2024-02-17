@@ -12,8 +12,8 @@ const port = 3001; // Define port number
 
 // Initialize OpenAI client with API ey
 const openai = new OpenAI({
-    apiKey: OPENAI_API_KEY, 
-  });
+  apiKey: OPENAI_API_KEY, 
+});
 
 
 // Setup other bits
@@ -25,19 +25,19 @@ app.use(cors()); // Enable CORS for all routes
 // This currently serves as a test to see if we can communicate with the API
 // Automatically runs when we run `node index.js`
 async function chatWithOpenAI() { 
-    try {
-        // Create a conversation with a system message
-        const completion = await openai.chat.completions.create({
-            messages: [{ role: "system", content: "You are a helpful assistant." }],
-            model: "gpt-3.5-turbo",
-        });
-        console.log(completion.choices[0].message.content);
-    } catch (error) {
-        console.error('Error:', error.message);
-    }
-    }
+  try {
+    // Create a conversation with a system message
+    const completion = await openai.chat.completions.create({
+      messages: [{ role: "system", content: "You are a helpful assistant." }],
+      model: "gpt-3.5-turbo",
+    });
+    console.log(completion.choices[0].message.content);
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+}
 
-    chatWithOpenAI();
+chatWithOpenAI();
 
 // Route to handle GET requests
 app.get('/example', (req, res) => {
@@ -49,14 +49,14 @@ app.post('/chat', async (req, res) => {
   try {
     // Extract message from request body, and reformat the prompt accordingly
     const { message } = reformatPrompt(req.body); 
-
+    
     // Send the user's message to the OpenAI API
     const completion = await openai.chat.completions.create({
-        messages: [{ role: "system", content: "You are a helpful assistant." },
-        { role: "user", content: message }],
-        model: "gpt-3.5-turbo",
-      });
-
+      messages: [{ role: "system", content: "You are a helpful assistant." },
+      { role: "user", content: message }],
+      model: "gpt-3.5-turbo",
+    });
+    
     // Extract the response from the OpenAI API
     const chatResponse = completion.choices[0].message.content;
     
@@ -74,6 +74,8 @@ function reformatPrompt(prompt) {
 }
 
 // Start the server
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+module.exports = {app, openai, port, server};
