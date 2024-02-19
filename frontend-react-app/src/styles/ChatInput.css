@@ -1,0 +1,26 @@
+.container-input{
+    display: flex;
+    align-items: center;
+}
+
+.text-area{
+    position: absolute;
+    bottom: 50px;
+    width: 66%;
+    margin-left: 1%;
+    align-items: center;
+    flex: 1;
+    padding: 10px;
+    font-size: large;
+    box-sizing: border-box;
+}
+
+.button{
+    position: fixed;
+    bottom: 50px;
+    right: 14%;
+    font-family: Arial, Helvetica, sans-serif;
+    border: 1px solid #ccc;
+    padding: 14px 25px;
+    border-radius: 15px;
+}

@@ -42,13 +42,19 @@ body {
 .input-box {
   width: 80%;
   max-height: 200px;
-  resize: none;
   overflow-y: auto;
   border: 1px solid #ccc;
   border-radius: 15px;
+  font-size: 17px;
   padding: 10px;
   box-sizing: border-box;
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.output-box{
+  width: 40%;
+  height: 50%;
+  top: 20px;
 }
 
 .send-button {

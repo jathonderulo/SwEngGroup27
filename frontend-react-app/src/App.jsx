@@ -1,11 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import "./index.css";
+import ChatWindow from "./components/ChatWindow.jsx";
+import ChatInput from "./components/ChatInput.jsx";
+import "./styles/index.css";
 
 const InputOutputBox = () => {
   const [inputText, setInputText] = useState('');
   const [displayText, setDisplayText] = useState('');
   const [conversationHistory, setConversationHistory] = useState([]); // Store conversation history
   const textAreaRef = useRef(null);
+  const [messages, setMessages] = useState([]);
+
 
   const handleInputChange = (e) => {
     setInputText(e.target.value);
@@ -42,42 +46,16 @@ const InputOutputBox = () => {
     setInputText(''); // Clear input field
   };
 
-  const resizeTextArea = () => {
-    textAreaRef.current.style.height = "auto";
-    textAreaRef.current.style.height = textAreaRef.current.scrollHeight + "px";
-  };
+  function handleMessageSubmit(newMessage) {
+    setMessages([...messages, newMessage]);
+  }
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  useEffect(resizeTextArea, [inputText]);
-
+// no text areas
   return (
     <body>
       <div className='header'>header</div>
-      <div className='container'>
-        <div className="output">
-          <textarea value={displayText} readOnly className="output-box"/>
-        </div>  
-        <div className="input">
-          <textarea
-            type="text" 
-            value={inputText} 
-            onChange={handleInputChange} 
-            placeholder='Type here...'
-            className="input-box"
-            rows={1}
-            ref={textAreaRef}
-            onKeyDown={handleKeyDown}
-          />
-          <button onClick={handleSend} className="send-button">Send </button>
-          
-        </div>
-      </div>
+      <ChatWindow messages={messages} />
+      <ChatInput onSubmit={handleMessageSubmit} />
     </body>
   );
 };

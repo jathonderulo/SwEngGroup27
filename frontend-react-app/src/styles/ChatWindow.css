@@ -1,0 +1,13 @@
+.container-chat {
+    margin-left: 1%;
+    width: 65%;
+    height: 75vh;
+    overflow-y: auto; /* Enable vertical scrolling if needed */
+    border: 1px solid #ccc; /* Optional: Add border for visual clarity */
+    padding: 5px; /* Optional: Add padding for spacing */
+  }
+
+.container-message{
+    position: relative;
+    left: 3%;
+}
