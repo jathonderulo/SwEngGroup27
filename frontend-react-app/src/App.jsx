@@ -4,8 +4,21 @@ import "./index.css";
 const InputOutputBox = () => {
   const [inputText, setInputText] = useState('');
   const [displayText, setDisplayText] = useState('');
-  const [conversationHistory, setConversationHistory] = useState([]); // Store conversation history
+  const [threadID, setThreadID] = useState('');           // threadID used to seperate different user's conversation
   const textAreaRef = useRef(null);
+
+  // This function sends a get request to the backend, which results in a new
+  // thread being created. This new thread's ID is then returned to this functon
+  // where it is assigned to the threadID variable
+  const getThread = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/new-thread',);  // Sends the GET request
+      const data = await response.json();                 // Retrieve JSON from the response
+      setThreadID(data.threadID);                         // Set threadID to the threadID string
+    } catch (error) {
+      console.error('Error creating thread: ', error);    //  Catch and log errors
+    }
+  }
 
   const handleInputChange = (e) => {
     setInputText(e.target.value);
@@ -15,7 +28,7 @@ const InputOutputBox = () => {
     try {
       const requestBody = {
         message: inputText,
-        conversationHistory: conversationHistory // Include the conversation history in the request
+        threadID: threadID,                               // threadID is included in req.body
       };
 
       const response = await fetch('http://localhost:3001/chat', {
@@ -23,7 +36,7 @@ const InputOutputBox = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
@@ -32,14 +45,13 @@ const InputOutputBox = () => {
 
       const data = await response.json();
       setDisplayText(prev => prev + '\n' + data.message); // Append new message to the display
-      setConversationHistory(data.conversationHistory); // Update the conversation history
 
     } catch (error) {
       console.error('Error fetching data:', error);
       setDisplayText('Error: Unable to fetch data from the server');
     }
 
-    setInputText(''); // Clear input field
+    setInputText('');                                     // Clear input field
   };
 
   const resizeTextArea = () => {
@@ -55,6 +67,12 @@ const InputOutputBox = () => {
   };
 
   useEffect(resizeTextArea, [inputText]);
+
+  
+  // Check if threadID is yet to be set
+  if(threadID === '') {
+    getThread();                                          // If so, set it to the ID of a new thread
+  }
 
   return (
     <body>
