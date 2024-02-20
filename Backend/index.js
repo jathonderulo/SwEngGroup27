@@ -85,11 +85,12 @@ async function waitForRun(run, threadID) {
   }
 }
 
-// In your endpoint:
+// Handle POST request from frontend to '/chat' endpoint, which is used for
+// interacting with the Assistant.
+// The request body contains both the user message and the threadID.
 app.post('/chat', async (req, res) => {
   try {
-    const { message, threadID } = req.body;                  // Extract message and threadID from the request body
-
+    const { message, threadID } = req.body;                            // Extract message and threadID from the request body
     const responseFromAI = await chatWithOpenAI(message, threadID);    // Interact with the Assistant
     console.log(responseFromAI.content.value);                         // Log the Assistant's response as a string
     res.json({ message: responseFromAI.content.value });               // Return the Assistant's response as JSON

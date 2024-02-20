@@ -19,6 +19,12 @@ const InputOutputBox = () => {
       console.error('Error creating thread: ', error);    //  Catch and log errors
     }
   }
+  
+  // Check if threadID is yet to be set
+  // There is probably a far cleaner way of doing this
+  if(threadID === '') {
+    getThread();                                          // If so, set it to the ID of a new thread
+  }
 
   const handleInputChange = (e) => {
     setInputText(e.target.value);
@@ -67,12 +73,6 @@ const InputOutputBox = () => {
   };
 
   useEffect(resizeTextArea, [inputText]);
-
-  
-  // Check if threadID is yet to be set
-  if(threadID === '') {
-    getThread();                                          // If so, set it to the ID of a new thread
-  }
 
   return (
     <body>
