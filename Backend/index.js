@@ -82,17 +82,21 @@ async function waitForRun(run, threadID) {
 
   while(run.status != 'completed') {                                   // Check if the run has completed yet
     // Log any changes to the run status whenever they occur
-    run = await openai.beta.threads.runs.retrieve( threadID, run.id ); // Retrieve run status
+    run = await openai.beta.threads.runs.retrieve(threadID, run.id);   // Retrieve run status
     if(prevStatus != run.status) {                                     // If it has changed
+      run = await openai.beta.threads.runs.retrieve(threadID, run.id); // Retrieve run status
       prevStatus = run.status;                                         //   Updated the prevStatus
-      console.log(run.status);                                         //   Log the status whenever it changes
+      console.log('Run status: ' + run.status + "\n");               //   Log the status whenever it changes
     }
 
     // Log any new messages whenever they appear
+    // JSON conversions are necessary for the conditions here
     messageList = await openai.beta.threads.messages.list(threadID);   // Retrieve the message list
     if(prevMessage != JSON.stringify(messageList.data[0].content[0])) {// Check for new messages 
       prevMessage = JSON.stringify(messageList.data[0].content[0]);    //   If new message, update prevMessage
-      console.log(prevMessage);                                        //   And log the new message
+      if(typeof(prevMessage) !== 'undefined') {
+        console.log(JSON.parse(prevMessage).text.value+"\n");     //   And log the new message
+      }
     }
 
     // Check if the run has failed, and if so throw an error containing the run status
