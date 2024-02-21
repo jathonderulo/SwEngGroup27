@@ -21,7 +21,8 @@ const InputOutputBox = () => {
   }
   
   // Check if threadID is yet to be set
-  // There is probably a far cleaner way of doing this
+  // There is probably a far cleaner way of doing this, if someone from frontend could
+  // simplify this please do. 
   if(threadID === '') {
     getThread();                                          // If so, set it to the ID of a new thread
   }

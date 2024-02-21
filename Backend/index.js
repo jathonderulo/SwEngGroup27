@@ -17,7 +17,7 @@ app.use(cors());
 
 // Assign the ID of the target assistant. This is a hard coded global variable.
 // Assistants can be created, deleted etc. from the assistant-editor.js file.
-const assistantID = 'asst_ogBkv6HgFLccSN0DKkLIsZE0';
+const assistantID = 'asst_3dWVPhERV46WJN7ZqIkODHSh';
 
 // NB This currently throws 500 (internal server) errors when using our
 // API key, but it works when using another API key. I will update this
@@ -76,9 +76,26 @@ async function chatWithOpenAI(text, threadID) {
 // If this happens the run will expire after 10 mins or so
 // The only fix is to refresh the tab, which will open a new thread
 async function waitForRun(run, threadID) {
+  messageList = await openai.beta.threads.messages.list(threadID);
+  let prevMessage = messageList.data[0].content[0];                    // Last stored message (for comparison)
+  let prevStatus = run.status;                                         // Last stored run status (for comparison)
+
   while(run.status != 'completed') {                                   // Check if the run has completed yet
-    console.log(run.status);                                           // Log the status upon each iteration
+    // Log any changes to the run status whenever they occur
     run = await openai.beta.threads.runs.retrieve( threadID, run.id ); // Retrieve run status
+    if(prevStatus != run.status) {                                     // If it has changed
+      prevStatus = run.status;                                         //   Updated the prevStatus
+      console.log(run.status);                                         //   Log the status whenever it changes
+    }
+
+    // Log any new messages whenever they appear
+    messageList = await openai.beta.threads.messages.list(threadID);   // Retrieve the message list
+    if(prevMessage != JSON.stringify(messageList.data[0].content[0])) {// Check for new messages 
+      prevMessage = JSON.stringify(messageList.data[0].content[0]);    //   If new message, update prevMessage
+      console.log(prevMessage);                                        //   And log the new message
+    }
+
+    // Check if the run has failed, and if so throw an error containing the run status
     if(run.status === ('failed' || 'cancelled' || 'expired')) {        // If failed, cancelled or expired
       throw("Run "+run.status);                                        //   Throw an error that includes the run status
     }
