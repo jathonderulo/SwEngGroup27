@@ -20,6 +20,11 @@ body {
   flex-direction: column;
 }
 
+.container-page {
+  display: flex;
+  padding: 20px;
+}
+
 .output{
   width: 100%;
   flex-grow: 1;
