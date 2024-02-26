@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ChatWindow from "./components/ChatWindow.jsx";
 import ChatInput from "./components/ChatInput.jsx";
-import "./styles/index.css";
+import "./styles/background.css";  
 
 const InputOutputBox = () => {
   const [messages, setMessages] = useState([]); // Store messages received from the server
@@ -50,8 +50,9 @@ const InputOutputBox = () => {
 
   return (
     <body>
-      <ChatWindow messages={messages} />
-      <ChatInput onSubmit={handleMessageSubmit} />
+      <div className="main-container"></div>
+        <ChatWindow messages={messages} />
+        <ChatInput onSubmit={handleMessageSubmit} />
     </body>
   );
 };
