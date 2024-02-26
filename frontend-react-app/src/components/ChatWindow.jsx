@@ -14,7 +14,6 @@ export default function ChatWindow({ messages }) {
   function calcWidth(message) {
     return message.text.length * 10;
   }
-  
 
   return (
     <div className="container-chat">
