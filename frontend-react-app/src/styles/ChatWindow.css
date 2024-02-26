@@ -1,11 +1,15 @@
 .container-chat {
-    margin-left: 1%;
-    margin-top: 1%;
+    margin-left: 2%;
+    margin-top: 2%;
+    border-radius: 15px;
     width: 65%;
     height: 75vh;
     overflow-y: auto; /* Enable vertical scrolling if needed */
     border: 1px solid #ccc; /* Optional: Add border for visual clarity */
     padding: 5px; /* Optional: Add padding for spacing */
+    color:black;
+    /* background-color: grey; */
+    background-color: rgba(255, 255, 255, 0.55); /* White background with 50% opacity */
   }
 
 .container-message{

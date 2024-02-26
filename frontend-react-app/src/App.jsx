@@ -40,8 +40,9 @@ const InputOutputBox = () => {
 
   return (
     <body>
-      <ChatWindow messages={messages} />
-      <ChatInput onSubmit={handleMessageSubmit} />
+      <div className="main-container"></div>
+        <ChatWindow messages={messages} />
+        <ChatInput onSubmit={handleMessageSubmit} />
     </body>
   );
 };
