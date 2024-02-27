@@ -3,6 +3,7 @@ import ChatWindow from "./components/ChatWindow.jsx";
 import ChatInput from "./components/ChatInput.jsx";
 import AiAvatar from "./components/AiAvatar.jsx";
 import "./styles/index.css";
+import "./styles/background.css";  
 
 const InputOutputBox = () => {
   const [messages, setMessages] = useState([]); // Store messages received from the server
@@ -63,12 +64,14 @@ const InputOutputBox = () => {
       ]);
     }
   };
+  
 
   return (
     <body>
-      <div className="container-page">
+      <div className="main-container"></div>
+        <div className="container-page">
         <ChatWindow messages={messages} />
-        <AiAvatar />
+          <AiAvatar />
       </div>
         <ChatInput onSubmit={handleMessageSubmit} />
     </body>
