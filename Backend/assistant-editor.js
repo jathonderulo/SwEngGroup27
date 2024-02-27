@@ -31,9 +31,9 @@ async function main() {
 
 // This function creates an assistant and a file and then connects the two
 async function initializeAssistant(name, instructions, filePath) {
-  assistantID = createAssistant(name, instructions);
-  fileID = createFile(filePath);
-  uploadFile(assistantID, fileID);
+  assistantID = await createAssistant(name, instructions);
+  fileID = await createFile(filePath);
+  await uploadFile(assistantID, fileID);
   console.log(assistantID);
 }
 
