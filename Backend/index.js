@@ -17,12 +17,7 @@ app.use(cors());
 
 // Assign the ID of the target assistant. This is a hard coded global variable.
 // Assistants can be created, deleted etc. from the assistant-editor.js file.
-const assistantID = 'asst_hCedfvBY45Br30lWe2izcKHp';
-
-// NB This currently throws 500 (internal server) errors when using our
-// API key, but it works when using another API key. I will update this
-// comment when this issue is resolved.
-
+const assistantID = 'asst_2yDLUp5hCbtI4xfdItlun9Xp';
 
 // This get request is used to create a new thread. It is called
 // whenever a new instance of the frontend is created, so that each
@@ -120,7 +115,6 @@ app.post('/chat', async (req, res) => {
     res.status(500).json({ error: error.message });                    // Send JSON error status back to frontend
   }
 });
-
 
 // Start the server on the specified port
 app.listen(port, () => {
