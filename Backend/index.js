@@ -17,7 +17,7 @@ app.use(cors());
 
 // Assign the ID of the target assistant. This is a hard coded global variable.
 // Assistants can be created, deleted etc. from the assistant-editor.js file.
-const assistantID = 'asst_3dWVPhERV46WJN7ZqIkODHSh';
+const assistantID = 'asst_hCedfvBY45Br30lWe2izcKHp';
 
 // NB This currently throws 500 (internal server) errors when using our
 // API key, but it works when using another API key. I will update this

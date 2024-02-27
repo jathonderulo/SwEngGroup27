@@ -6,27 +6,23 @@ const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,
 });
 
-//
-// DO NOT run the deleteAllAssistants() function using the client provided API key
-//
-
 // The main function is run upon execution of this program. Use this function
 // to call the other functions conveniently. Be careful with your function calls
 // as some of these functions can be damaging if run accidentally.
 // Uncomment function calls to use them.
 async function main() {
   listAllAssistants();
+
+  // Uncomment the function below to create a new Assistant. Pass three params:
+  //   - assistantName
+  //   - assistantInstructions
+  //   - pathOfFile
+
   // initializeAssistant("Survey Assistant", 
   // "You are an assistant that answers questions people ask surrounding the results to a survey."
   //  + " The survey results are contained in a .json file, which you have access to. Please respond 'Sorry I cannot do that for you' to"
   //  + " any questions that are unrelated to the survey data.",
   //  "./data-sets/survey-answers-all.json");
-  // createFile('./data-sets/survey-answers-all.json');
-  // uploadFile('asst_3dWVPhERV46WJN7ZqIkODHSh', 'file-3EQ7kALSuy7Zp6puUzINuvFH');
-  //  createAssistant("Survey Assistant", "You are an assistant that answers questions people ask surrounding the results to a survey."
-  //  + " The survey results are contained in a .json file, which you have access to. Please respond 'Sorry I cannot do that for you' to"
-  //  + " any questions that are unrelated to the survey data.");
-  // deleteAllAssistants();
 }
 
 // This function creates an assistant and a file and then connects the two
@@ -81,6 +77,5 @@ async function uploadFile(assistantID, fileID) {
   );
   console.log(assistantFile);                     // Log the assistant.file information
 }
-
 
 main();
