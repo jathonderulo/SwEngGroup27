@@ -70,6 +70,7 @@ async function createFile(path) {
     purpose: 'assistants',                        // Purpose is either 'fine-tuning' or 'assistants'
   });
   console.log(file);                              // Log the file information
+  return file.id;                                 // the file id is returned
 }
 
 // This function attaches a file from the openAI servers to an assistant
