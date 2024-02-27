@@ -19,7 +19,6 @@ const InputOutputBox = () => {
         }))
       };
       
-  
       const response = await fetch('http://localhost:3001/chat', {
         method: 'POST',
         headers: {
@@ -47,7 +46,6 @@ const InputOutputBox = () => {
     }
   };
   
-
   return (
     <body>
       <div className="main-container"></div>

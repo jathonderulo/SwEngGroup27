@@ -5,12 +5,11 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background-image: url('../pic.jpeg'); /* Your background image */
+    background-image: url('../pic1.jpeg'); 
     background-size: cover;
     background-position: center;
-    /* Apply the blur effect */
-    filter: blur(5px);
+    filter: blur(4px);
+    transform: scale(1.02);
     opacity: 90%;
-    /* This is to ensure the pseudo-element covers the whole parent */
     z-index: -1;
-  }
+}
