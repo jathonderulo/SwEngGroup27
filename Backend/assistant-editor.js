@@ -16,12 +16,25 @@ const openai = new OpenAI({
 // Uncomment function calls to use them.
 async function main() {
   listAllAssistants();
+  // initializeAssistant("Survey Assistant", 
+  // "You are an assistant that answers questions people ask surrounding the results to a survey."
+  //  + " The survey results are contained in a .json file, which you have access to. Please respond 'Sorry I cannot do that for you' to"
+  //  + " any questions that are unrelated to the survey data.",
+  //  "./data-sets/survey-answers-all.json");
   // createFile('./data-sets/survey-answers-all.json');
   // uploadFile('asst_3dWVPhERV46WJN7ZqIkODHSh', 'file-3EQ7kALSuy7Zp6puUzINuvFH');
-  // createAssistant("Survey Assistant", "You are an assistant that answers questions people ask surrounding the results to a survey."
-  // + " The survey results are contained in a .json file, which you have access to. Please respond 'Sorry I cannot do that for you' to"
-  // + " any questions that are unrelated to the survey data.");
+  //  createAssistant("Survey Assistant", "You are an assistant that answers questions people ask surrounding the results to a survey."
+  //  + " The survey results are contained in a .json file, which you have access to. Please respond 'Sorry I cannot do that for you' to"
+  //  + " any questions that are unrelated to the survey data.");
   // deleteAllAssistants();
+}
+
+// This function creates an assistant and a file and then connects the two
+async function initializeAssistant(name, instructions, filePath) {
+  assistantID = createAssistant(name, instructions);
+  fileID = createFile(filePath);
+  uploadFile(assistantID, fileID);
+  console.log(assistantID);
 }
 
 // This function retrieves a list of all assistants stored on OpenAI's servers
@@ -45,6 +58,7 @@ async function createAssistant(name, instructions) {
   });
 
   console.log(myAssistant);                       // Log the assistant information
+  return myAssistant.id;                          // returns the assistants id
 }
 
 // This function creates a file using the openAI NodeJS library
@@ -67,21 +81,5 @@ async function uploadFile(assistantID, fileID) {
   console.log(assistantFile);                     // Log the assistant.file information
 }
 
-// This function will delete all assistants stored on openAI's servers
-// under the organisation tied to the current key. Use this function
-// carefully and ensure you are using the correct key.
-async function deleteAllAssistants() {
-  list = await openai.beta.assistants.list();     // Retrieve a list of all assistants
-  let currId;                                     // Create a variable for the assistant ID
-  console.log(list);                              // Log the list before deletions
-
-  for(i=0; i<list.data.length; i++) {             // Loop through all assistants
-    currId = list.data[i].id;                     //   Store their ID
-    console.log(currId);                          //   Log this ID
-    await openai.beta.assistants.del(currId);     //   Then delete the target assistant
-  }
-  list = await openai.beta.assistants.list();     // Retrieve the updated list
-  console.log(list);                              // And log this updated list
-}
 
 main();
