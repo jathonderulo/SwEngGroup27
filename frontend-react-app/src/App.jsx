@@ -1,56 +1,79 @@
-import { useState, useEffect, useRef } from 'react';
-import "./index.css";
+import React, { useState, useEffect, useRef } from "react";
+import ChatWindow from "./components/ChatWindow.jsx";
+import ChatInput from "./components/ChatInput.jsx";
+import AiAvatar from "./components/AiAvatar.jsx";
+import "./styles/index.css";
+import "./styles/background.css";  
 
 const InputOutputBox = () => {
-  const [inputText, setInputText] = useState('');
-  const [displayText, setDisplayText] = useState('');
-  const textAreaRef = useRef(null); 
+  const [messages, setMessages] = useState([]); // Store messages received from the server
 
-  const handleInputChange = (e) => {
-    setInputText(e.target.value);
-  };
+  const handleMessageSubmit = async (newMessage) => {
+    // Add the new message to the chat window immediately
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-  const handleDisplay = () => {
-    setDisplayText(inputText);
-    setInputText('');
-  };
+    try {
+      const requestBody = {
+        message: newMessage.text,
+        conversationHistory: messages.map((msg) => ({
+          role: msg.sender === "Server" ? "assistant" : "user", // Adjust this based on your actual roles
+          content: msg.text,
+        })),
+      };
 
-  const resizeTextArea = () => {
-    textAreaRef.current.style.height = "auto";
-    textAreaRef.current.style.height = textAreaRef.current.scrollHeight + "px";
-  };
+      const response = await fetch("http://localhost:3001/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleDisplay();
+      // Check if the response was not ok
+      if (!response.ok) {
+        const errorDetails = await response.text(); // or response.json() if the server sends JSON
+        console.error(
+          "Server responded with an error:",
+          response.status,
+          errorDetails
+        );
+        // Optionally, update the UI to show the error
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { id: Date.now(), sender: "System", text: `Error: ${errorDetails}` },
+        ]);
+        return; // Prevent further execution
+      }
+
+      const data = await response.json();
+      // Add the response message to the chat window
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { id: data.id, sender: "Server", text: data.message },
+      ]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      // Display error message in the chat window
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          id: Date.now(),
+          sender: "System",
+          text: "Error: Unable to fetch data from the server",
+        },
+      ]);
     }
   };
-
-  useEffect(resizeTextArea, [inputText]);
+  
 
   return (
     <body>
-      <div className='header'>header</div>
-      <div className='container'>
-        <div className="output">
-          <textarea value={displayText} readOnly className="output-box"/>
-        </div>  
-        <div className="input">
-          <textarea
-            type="text" 
-            value={inputText} 
-            onChange={handleInputChange} 
-            placeholder='Type here...'
-            className="input-box"
-            rows={1}
-            ref={textAreaRef}
-            onKeyDown={handleKeyDown}
-          />
-          <button onClick={handleDisplay} className="send-button">Send </button>
-          
-        </div>
+      <div className="main-container"></div>
+        <div className="container-page">
+        <ChatWindow messages={messages} />
+        <AiAvatar />
       </div>
+        <ChatInput onSubmit={handleMessageSubmit} />
     </body>
   );
 };

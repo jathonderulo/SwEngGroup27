@@ -1,0 +1,16 @@
+.container-chat {
+  margin-left: 2.5%;
+  margin-top: 2.5%;
+  border-radius: 15px;
+  width: 65vw;
+  height: 80vh;
+  overflow-y: auto; /* Enable vertical scrolling if needed */
+  border: 1px solid #FFFFFF; /* Optional: Add border for visual clarity */
+  background-color: rgba(255, 255, 255, 0.55); /* White background with 50% opacity */
+}
+
+.container-message{
+  position: relative;
+  left: 3%;
+}
+

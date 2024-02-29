@@ -1,81 +1,67 @@
-// Import required modules
-const express = require('express'); // Node.js framework for building RESTful APIs
-const bodyParser = require('body-parser'); // Parses incoming request bodies
-const cors = require('cors'); // Enables Cross-Origin Resource Sharing
-const OpenAI = require('openai'); // OpenAI API wrapper
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const OpenAI = require('openai');
 
-const { OPENAI_API_KEY } = require('./config'); // Import API key from config.js
+const { OPENAI_API_KEY } = require('./config');
 
-// Initialize Express application
 const app = express();
-const port = 3001; // Define port number
+const port = 3001;
 
-// Initialize OpenAI client with API ey
 const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY, 
+  apiKey: OPENAI_API_KEY,
 });
 
 
-// Setup other bits
 app.use(bodyParser.json());
-app.use(cors()); // Enable CORS for all routes
+app.use(cors());
 
+// Store the conversation state
+let conversationHistory = [];
 
-// Function to initiate conversation with OpenAI
-// This currently serves as a test to see if we can communicate with the API
-// Automatically runs when we run `node index.js`
-async function chatWithOpenAI() { 
+async function chatWithOpenAI(text, sessionHistory) {
   try {
-    // Create a conversation with a system message
+    // Include a system message or user message based on sessionHistory being empty or not
+    const messages = sessionHistory.length > 0 ? sessionHistory : [{ role: "system", content: "Start a new conversation" }];
+    messages.push({ role: "user", content: text }); // Add the new user message to the conversation history
+
     const completion = await openai.chat.completions.create({
-      messages: [{ role: "system", content: "You are a helpful assistant." }],
       model: "gpt-3.5-turbo",
+      messages: messages,
     });
-    console.log(completion.choices[0].message.content);
+
+
+    // Add the AI's response to the conversation history
+    messages.push({ role: "assistant", content: completion.choices[0].message.content });
+
+    return {
+      content: completion.choices[0].message.content,
+      conversationHistory: messages // Return the updated conversation history
+    };
   } catch (error) {
-    console.error('Error:', error.message);
+    console.error('Error:', error);
+    throw error; // Ensure error handling in the calling function
   }
 }
 
-chatWithOpenAI();
-
-// Route to handle GET requests
-app.get('/example', (req, res) => {
-  res.send('This is an example GET request response.');
-});
-
-// Handle incoming chat messages
+// In your endpoint:
 app.post('/chat', async (req, res) => {
   try {
-    // Extract message from request body, and reformat the prompt accordingly
-    const { message } = reformatPrompt(req.body); 
-    
-    // Send the user's message to the OpenAI API
-    const completion = await openai.chat.completions.create({
-      messages: [{ role: "system", content: "You are a helpful assistant." },
-      { role: "user", content: message }],
-      model: "gpt-3.5-turbo",
-    });
-    
-    // Extract the response from the OpenAI API
-    const chatResponse = completion.choices[0].message.content;
-    
-    // Send the chat response back to the client
-    res.json({ message: chatResponse });
+    const { message, conversationHistory } = req.body; // Get conversationHistory from the request body
+
+    // Ensure that conversationHistory is an array
+    const validHistory = Array.isArray(conversationHistory) ? conversationHistory : [];
+
+    const responseFromAI = await chatWithOpenAI(message, validHistory);
+    console.log(responseFromAI.content);
+    res.json({ message: responseFromAI.content, conversationHistory: responseFromAI.conversationHistory });
+
   } catch (error) {
     console.error('Error processing chat message:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Sample prompt engineering using a hard coded persona
-function reformatPrompt(prompt) {
-  return "Answer the following question from the point of view of a 36-53 year old male: " + prompt;
-}
-
-// Start the server
-const server = app.listen(port, () => {
+app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
-module.exports = {app, openai, port, server};

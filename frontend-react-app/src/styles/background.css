@@ -1,0 +1,15 @@
+.main-container {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: url('../pic1.jpeg'); 
+    background-size: cover;
+    background-position: center;
+    filter: blur(4px);
+    transform: scale(1.02);
+    opacity: 90%;
+    z-index: -1;
+}
