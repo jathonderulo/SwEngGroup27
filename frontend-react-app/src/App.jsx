@@ -38,11 +38,6 @@ const InputOutputBox = () => {
       const requestBody = {
         message: newMessage.text,
         threadID,             // Dynamic threadID
-
-        // conversationHistory: messages.map((msg) => ({
-        //   role: msg.sender === "Server" ? "assistant" : "user", // Adjust this based on your actual roles
-        //   content: msg.text,
-        // })),
       };
 
       const response = await fetch("http://localhost:3001/chat", {
