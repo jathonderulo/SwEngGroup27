@@ -12,56 +12,111 @@ const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,
 });
 
-
 app.use(bodyParser.json());
 app.use(cors());
 
-// Store the conversation state
-let conversationHistory = [];
+// Assign the ID of the target assistant. This is a hard coded global variable.
+// Assistants can be created, deleted etc. from the assistant-editor.js file.
+const assistantID = 'asst_2yDLUp5hCbtI4xfdItlun9Xp';
 
-async function chatWithOpenAI(text, sessionHistory) {
+// This get request is used to create a new thread. It is called
+// whenever a new instance of the frontend is created, so that each
+// user can add messages to their own personal thread.
+app.get('/new-thread', async (req, res) => {
   try {
-    // Include a system message or user message based on sessionHistory being empty or not
-    const messages = sessionHistory.length > 0 ? sessionHistory : [{ role: "system", content: "Start a new conversation" }];
-    messages.push({ role: "user", content: text }); // Add the new user message to the conversation history
-
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: messages,
-    });
-
-
-    // Add the AI's response to the conversation history
-    messages.push({ role: "assistant", content: completion.choices[0].message.content });
-
-    return {
-      content: completion.choices[0].message.content,
-      conversationHistory: messages // Return the updated conversation history
-    };
+    const thread = await openai.beta.threads.create();       // Create a new thread and store its ID
+    res.json({ threadID: thread.id });                       // Return the new thread's ID as JSON
   } catch (error) {
-    console.error('Error:', error);
-    throw error; // Ensure error handling in the calling function
+    console.error('Error: ', error);                         // Catch errors and print them to console
+  }
+})
+
+// This function handles all chat interaction with the Assistant. 
+//   text: stores the message currently being passed to the Assistant
+//   threadID: the unique identifier that seperates user conversations
+//   return: The Assistant's final response as a string
+async function chatWithOpenAI(text, threadID) {
+  try {
+    // Add the user's message on to the current thread. Threads will store all messages
+    // created by the user and the Assistant.
+    const message = await openai.beta.threads.messages.create( threadID,
+      { role: "user", content: text }
+    );
+
+    // Run the updated thread on the global assistant
+    run = await openai.beta.threads.runs.create( threadID,   // The "run" variable stores info about the progress of the
+      { assistant_id: assistantID }                          // current run. It DOES NOT store the Assistants response
+    );
+
+    // Extracting this waiting to a function allows "await" to be used. This helps
+    // to prevent errors where a new thread is created during a run.
+    await waitForRun(run, threadID);
+
+    // Retreive the updated message list, which includes the latest AI response
+    const messageList = await openai.beta.threads.messages.list(
+      threadID
+    );
+
+    return { content: messageList.data[0].content[0].text }; // Return the assistant's final response message
+  } catch (error) {
+    console.error('Error: ', error);                         // Log the error message
+    throw error;                                             // Ensure error handling in the calling function
   }
 }
 
-// In your endpoint:
+// This function will only return once the run has concluded
+//   run: The run to be waited on
+//   threadID: the unique identifier that seperates user conversations
+// This will occasionally get stuck with run.status == in_progress
+// If this happens the run will expire after 10 mins or so
+// The only fix is to refresh the tab, which will open a new thread
+async function waitForRun(run, threadID) {
+  messageList = await openai.beta.threads.messages.list(threadID);
+  let prevMessage = messageList.data[0].content[0];                    // Last stored message (for comparison)
+  let prevStatus = run.status;                                         // Last stored run status (for comparison)
+
+  while(run.status != 'completed') {                                   // Check if the run has completed yet
+    // Log any changes to the run status whenever they occur
+    run = await openai.beta.threads.runs.retrieve(threadID, run.id);   // Retrieve run status
+    if(prevStatus != run.status) {                                     // If it has changed
+      run = await openai.beta.threads.runs.retrieve(threadID, run.id); // Retrieve run status
+      prevStatus = run.status;                                         //   Updated the prevStatus
+      console.log('Run status: ' + run.status + "\n");               //   Log the status whenever it changes
+    }
+
+    // Log any new messages whenever they appear
+    // JSON conversions are necessary for the conditions here
+    messageList = await openai.beta.threads.messages.list(threadID);   // Retrieve the message list
+    if(prevMessage != JSON.stringify(messageList.data[0].content[0])) {// Check for new messages 
+      prevMessage = JSON.stringify(messageList.data[0].content[0]);    //   If new message, update prevMessage
+      if(typeof(prevMessage) !== 'undefined') {
+        console.log(JSON.parse(prevMessage).text.value+"\n");     //   And log the new message
+      }
+    }
+
+    // Check if the run has failed, and if so throw an error containing the run status
+    if(run.status === ('failed' || 'cancelled' || 'expired')) {        // If failed, cancelled or expired
+      throw("Run "+run.status);                                        //   Throw an error that includes the run status
+    }
+  }
+}
+
+// Handle POST request from frontend to '/chat' endpoint, which is used for
+// interacting with the Assistant.
+// The request body contains both the user message and the threadID.
 app.post('/chat', async (req, res) => {
   try {
-    const { message, conversationHistory } = req.body; // Get conversationHistory from the request body
-
-    // Ensure that conversationHistory is an array
-    const validHistory = Array.isArray(conversationHistory) ? conversationHistory : [];
-
-    const responseFromAI = await chatWithOpenAI(message, validHistory);
-    console.log(responseFromAI.content);
-    res.json({ message: responseFromAI.content, conversationHistory: responseFromAI.conversationHistory });
-
+    const { message, threadID } = req.body;                            // Extract message and threadID from the request body
+    const responseFromAI = await chatWithOpenAI(message, threadID);    // Interact with the Assistant
+    console.log(responseFromAI.content.value);                         // Log the Assistant's response as a string
+    res.json({ message: responseFromAI.content.value });               // Return the Assistant's response as JSON
   } catch (error) {
-    console.error('Error processing chat message:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Error processing chat message:', error);            // Catch and log any errors
+    res.status(500).json({ error: error.message });                    // Send JSON error status back to frontend
   }
 });
 
+// Start the server on the specified port
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`);          // Log message stating the port number
 });
