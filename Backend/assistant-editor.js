@@ -12,6 +12,7 @@ const openai = new OpenAI({
 // Uncomment function calls to use them.
 async function main() {
   listAllAssistants();
+  // createThread();
 
   // Uncomment the function below to create a new Assistant. Pass three params:
   //   - assistantName

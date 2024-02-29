@@ -15,7 +15,7 @@ const InputOutputBox = () => {
     try {
       const requestBody = {
         message: newMessage.text,
-        threadID: 'thread_0b2cY8L9jJ9JkBQi4c9vrMVn',             // Hardcoded placeholder threadID
+        threadID: 'thread_QqbKjaXGyaR9KBqrhAvQjj34',             // Hardcoded placeholder threadID
 
         // conversationHistory: messages.map((msg) => ({
         //   role: msg.sender === "Server" ? "assistant" : "user", // Adjust this based on your actual roles
