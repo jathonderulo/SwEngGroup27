@@ -11,8 +11,9 @@ const openai = new OpenAI({
 // as some of these functions can be damaging if run accidentally.
 // Uncomment function calls to use them.
 async function main() {
-  listAllAssistants();
-
+  // listAllAssistants();
+  const thread = await openai.beta.threads.create();
+  console.log(thread.id);
   // Uncomment the function below to create a new Assistant. Pass three params:
   //   - assistantName
   //   - assistantInstructions

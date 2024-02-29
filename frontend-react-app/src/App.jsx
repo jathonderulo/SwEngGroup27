@@ -15,10 +15,12 @@ const InputOutputBox = () => {
     try {
       const requestBody = {
         message: newMessage.text,
-        conversationHistory: messages.map((msg) => ({
-          role: msg.sender === "Server" ? "assistant" : "user", // Adjust this based on your actual roles
-          content: msg.text,
-        })),
+        threadID: 'thread_0b2cY8L9jJ9JkBQi4c9vrMVn',             // Hardcoded placeholder threadID
+
+        // conversationHistory: messages.map((msg) => ({
+        //   role: msg.sender === "Server" ? "assistant" : "user", // Adjust this based on your actual roles
+        //   content: msg.text,
+        // })),
       };
 
       const response = await fetch("http://localhost:3001/chat", {
