@@ -19,10 +19,10 @@ app.use(cors());
 // Assistants can be created, deleted etc. from the assistant-editor.js file.
 const assistantID = 'asst_2yDLUp5hCbtI4xfdItlun9Xp';
 
-// This get request is used to create a new thread. It is called
+// This post request is used to create a new thread. It is called
 // whenever a new instance of the frontend is created, so that each
 // user can add messages to their own personal thread.
-app.get('/new-thread', async (req, res) => {
+app.post('/new-thread', async (req, res) => {
   try {
     const thread = await openai.beta.threads.create();       // Create a new thread and store its ID
     res.json({ threadID: thread.id });                       // Return the new thread's ID as JSON
