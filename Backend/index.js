@@ -25,6 +25,7 @@ const assistantID = 'asst_2yDLUp5hCbtI4xfdItlun9Xp';
 app.post('/new-thread', async (req, res) => {
   try {
     const thread = await openai.beta.threads.create();       // Create a new thread and store its ID
+    //console.log({threadID: thread.id.JSON.stringify});
     res.json({ threadID: thread.id });                       // Return the new thread's ID as JSON
   } catch (error) {
     console.error('Error: ', error);                         // Catch errors and print them to console

@@ -4,18 +4,40 @@ import ChatInput from "./components/ChatInput.jsx";
 import AiAvatar from "./components/AiAvatar.jsx";
 import "./styles/index.css";
 import "./styles/background.css";  
+import axios from 'axios';
 
 const InputOutputBox = () => {
-  const [messages, setMessages] = useState([]); // Store messages received from the server
+  const [messages, setMessages] = useState([]);
+  const [threadID, setThreadID] = useState(null); // State to store the dynamic threadID
+
+  useEffect(() => {
+    // Function to initialize a new thread
+    const initNewThread = async () => {
+      try {
+        const response = await axios.post('http://localhost:3001/new-thread');
+        setThreadID(response.data.threadID); // Store the threadID from the response
+      } catch (error) {
+        console.error('Error initializing new thread:', error);
+      }
+    };
+
+    initNewThread();
+  }, []);
 
   const handleMessageSubmit = async (newMessage) => {
     // Add the new message to the chat window immediately
     setMessages((prevMessages) => [...prevMessages, newMessage]);
 
+    if (!threadID) {
+      console.error("ThreadID is not initialized yet.");
+      return; // Prevent the chat request if threadID is not set
+    }
+
+
     try {
       const requestBody = {
         message: newMessage.text,
-        threadID: 'thread_QqbKjaXGyaR9KBqrhAvQjj34',             // Hardcoded placeholder threadID
+        threadID,             // Dynamic threadID
 
         // conversationHistory: messages.map((msg) => ({
         //   role: msg.sender === "Server" ? "assistant" : "user", // Adjust this based on your actual roles
