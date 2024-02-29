@@ -9,6 +9,7 @@ import axios from 'axios';
 const InputOutputBox = () => {
   const [messages, setMessages] = useState([]);
   const [threadID, setThreadID] = useState(null); // State to store the dynamic threadID
+  const [isLoading, setIsLoading] = useState(false); //state of the loading message
 
   useEffect(() => {
     // Function to initialize a new thread
@@ -27,7 +28,7 @@ const InputOutputBox = () => {
   const handleMessageSubmit = async (newMessage) => {
     // Add the new message to the chat window immediately
     setMessages((prevMessages) => [...prevMessages, newMessage]);
-
+    setIsLoading(true); // three loading dots start now
     if (!threadID) {
       console.error("ThreadID is not initialized yet.");
       return; // Prevent the chat request if threadID is not set
@@ -65,6 +66,7 @@ const InputOutputBox = () => {
       }
 
       const data = await response.json();
+      setIsLoading(false); //end loading dots before adding response to the window
       // Add the response message to the chat window
       setMessages((prevMessages) => [
         ...prevMessages,
@@ -89,7 +91,7 @@ const InputOutputBox = () => {
     <body>
       <div className="main-container"></div>
         <div className="container-page">
-        <ChatWindow messages={messages} />
+        <ChatWindow messages={messages} isLoading={isLoading}/>
         <AiAvatar />
       </div>
         <ChatInput onSubmit={handleMessageSubmit} />
