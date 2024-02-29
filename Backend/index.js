@@ -12,6 +12,7 @@ const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,
 });
 
+
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -28,6 +29,7 @@ async function chatWithOpenAI(text, sessionHistory) {
       model: "gpt-3.5-turbo",
       messages: messages,
     });
+
 
     // Add the AI's response to the conversation history
     messages.push({ role: "assistant", content: completion.choices[0].message.content });
@@ -53,6 +55,7 @@ app.post('/chat', async (req, res) => {
     const responseFromAI = await chatWithOpenAI(message, validHistory);
     console.log(responseFromAI.content);
     res.json({ message: responseFromAI.content, conversationHistory: responseFromAI.conversationHistory });
+
   } catch (error) {
     console.error('Error processing chat message:', error);
     res.status(500).json({ error: error.message });
