@@ -2,49 +2,42 @@ import React, { useRef, useEffect, useState } from "react";
 import "../styles/ChatWindow.css";
 
 
-export default function ChatWindow({ messages, isLoading  }) {
+export default function ChatWindow({ messages, isLoading }) {
   const windowEnd = useRef(null);
   const [loadingText, setLoadingText] = useState("...");
 
-  /** Show loading dots */
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setLoadingText((prev) => {
-        if (prev === "...") return "..";
-        else if (prev === "..") return ".";
-        else return "...";
-      });
-    }, 300);
+      setLoadingText((prev) => prev.length < 3 ? prev + "." : "");
+    }, 500);
 
     return () => clearInterval(intervalId);
   }, []);
-  /** Scroll to bottom on message submit */
+
   useEffect(() => {
     windowEnd.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-    /** Calculate the width of the text */
-    function getTextWidth(text) {
-      // Assuming 10 pixels per character for simplicity
-      return text.length * 10;
+  function getMessageClasses(sender) {
+    let baseClasses = "container-message";
+    if (sender === "user") {
+      return `${baseClasses} user-message`; // Additional class for user messages
+    } else if (sender === "ai") {
+      return `${baseClasses} ai-message`; // Additional class for AI messages
     }
+    return baseClasses; // Default class if sender is unknown
+  }
 
   return (
     <div className="container-chat">
-      {messages &&
-        messages.map((message) => (
-          <div className="container-message"
-          key={message.id}
-          style={{ width: getTextWidth(message.text) > 300 ? "95%" : "auto" }}
-          >
-          <p style={{ whiteSpace: "pre-line" }}>{message.text}</p> {/*if the message goes to the new line, the new line will show in the chat window*/}
-          </div>
-        ))}
+      {messages.map((message, index) => (
+        <div key={index} className={getMessageClasses(message.sender)}>
+          <p style={{ whiteSpace: "pre-line" }}>{message.text}</p>
+        </div>
+      ))}
       {isLoading && (
         <div className="container-message loading">
-          <div className="message-box">
-            <p>{loadingText}</p>
-          </div>
+          <p>{loadingText}</p>
         </div>
       )}
       <div ref={windowEnd} />

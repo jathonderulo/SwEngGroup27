@@ -25,22 +25,29 @@ const InputOutputBox = () => {
     initNewThread();
   }, []);
 
-  const handleMessageSubmit = async (newMessage) => {
-    // Add the new message to the chat window immediately
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-    setIsLoading(true); // three loading dots start now
+  const handleMessageSubmit = async (newMessageText) => {
+    // Construct a new message object for the user message
+    const newUserMessage = {
+      text: newMessageText.text,
+      sender: "user" // message is from the user
+    };
+  
+    // Add the new user message to the chat window immediately
+    setMessages((prevMessages) => [...prevMessages, newUserMessage]);
+    setIsLoading(true); // Show loading indicator
+  
     if (!threadID) {
       console.error("ThreadID is not initialized yet.");
-      return; // Prevent the chat request if threadID is not set
+      setIsLoading(false);
+      return;
     }
-
-
+  
     try {
       const requestBody = {
-        message: newMessage.text,
-        threadID,             // Dynamic threadID
+        message: newMessageText.text,
+        threadID,
       };
-
+  
       const response = await fetch("http://localhost:3001/chat", {
         method: "POST",
         headers: {
@@ -48,43 +55,28 @@ const InputOutputBox = () => {
         },
         body: JSON.stringify(requestBody),
       });
-
-      // Check if the response was not ok
+  
       if (!response.ok) {
-        const errorDetails = await response.text(); // or response.json() if the server sends JSON
-        console.error(
-          "Server responded with an error:",
-          response.status,
-          errorDetails
-        );
-        // Optionally, update the UI to show the error
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { id: Date.now(), sender: "System", text: `Error: ${errorDetails}` },
-        ]);
-        return; // Prevent further execution
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+  
       const data = await response.json();
-      setIsLoading(false); //end loading dots before adding response to the window
-      // Add the response message to the chat window
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { id: data.id, sender: "Server", text: data.message },
-      ]);
+      setIsLoading(false); // Hide loading indicator
+  
+      // Construct a new message object for the AI response
+      const newAiMessage = {
+        text: data.message,
+        sender: "ai" // Indicating this message is from the AI
+      };
+  
+      // Add the AI response to the chat window
+      setMessages((prevMessages) => [...prevMessages, newAiMessage]);
     } catch (error) {
-      console.error("Error fetching data:", error);
-      // Display error message in the chat window
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          id: Date.now(),
-          sender: "System",
-          text: "Error: Unable to fetch data from the server",
-        },
-      ]);
+      console.error("Error sending message:", error);
+      setIsLoading(false);
     }
   };
+  
   
 
   return (
