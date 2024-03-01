@@ -11,7 +11,8 @@ const openai = new OpenAI({
 // as some of these functions can be damaging if run accidentally.
 // Uncomment function calls to use them.
 async function main() {
-  listAllAssistants();
+  // listAllAssistants();
+  listFiles();
   // logRecentAssistant();
 
   // Uncomment the function below to create a new Assistant. Pass three params:
@@ -92,6 +93,11 @@ async function uploadFile(assistantID, fileID) {
     assistantID, { file_id: fileID }              // assistantID and fileID from parameters
   );
   console.log(assistantFile);                     // Log the assistant.file information
+}
+
+async function listFiles() {
+  const fileList = await openai.files.list();
+  console.log(fileList);
 }
 
 // This function deletes the specified assistant
