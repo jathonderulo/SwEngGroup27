@@ -17,7 +17,7 @@ app.use(cors());
 
 // Assign the ID of the target assistant. This is a hard coded global variable.
 // Assistants can be created, deleted etc. from the assistant-editor.js file.
-const assistantID = 'asst_zS5NHp7iNJK31x2psKq6Oezu';
+const assistantID = 'asst_oANbAY9nu3G4i5ySHABCLUIB';
 
 // This post request is used to create a new thread. It is called
 // whenever a new instance of the frontend is created, so that each

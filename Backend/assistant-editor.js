@@ -12,7 +12,7 @@ const openai = new OpenAI({
 // Uncomment function calls to use them.
 async function main() {
   listAllAssistants();
-  // createThread();
+  // logRecentAssistant();
 
   // Uncomment the function below to create a new Assistant. Pass three params:
   //   - assistantName
@@ -45,6 +45,15 @@ async function initializeAssistant(name, instructions, filePath) {
 async function listAllAssistants() {
   const list = await openai.beta.assistants.list();         // Retrieve a list of our assistants from OpenAI
   console.log(list);                                        // Log this list in full
+}
+
+// This function logs the info of the most recent assistant
+async function logRecentAssistant() {
+  const list = await openai.beta.assistants.list();         // Retrieve assistant list
+  const assistantID = list.body.first_id;                   // Extract ID of most recent from list
+  const assistant = await openai.beta.assistants.retrieve(assistantID); // Retrieve that assistant
+  console.log(assistant);                                   // Log its info
+  return assistant;                                         // And return its info
 }
 
 // This function creates an assistant using the openAI NodeJS library
@@ -83,6 +92,12 @@ async function uploadFile(assistantID, fileID) {
     assistantID, { file_id: fileID }              // assistantID and fileID from parameters
   );
   console.log(assistantFile);                     // Log the assistant.file information
+}
+
+// This function deletes the specified assistant
+async function deleteAssistant(assistantID) {
+  await openai.beta.assistants.del(assistantID);  // Delete assistant with the passed ID parameter
+  console.log("Deleted "+assistantID);            // Log the deletion
 }
 
 main();
