@@ -34,7 +34,7 @@ app.post('/new-thread', async (req, res) => {
 // This function handles all chat interaction with the Assistant. 
 //   text: stores the message currently being passed to the Assistant
 //   threadID: the unique identifier that seperates user conversations
-//   return: The Assistant's final response as a string
+//   return: Nothing directly. All response is returned through the "res" stream
 async function chatWithOpenAI(text, threadID, res) {
   try {
     // Add the user's message on to the current thread. Threads will store all messages
@@ -43,39 +43,49 @@ async function chatWithOpenAI(text, threadID, res) {
       { role: "user", content: text }
     );
     
-    // Run the specified thread on the assistant, using streaming. Output is streamed to
-    // both the passed "res" stream, and to the console.
+    // Run the specified thread on the Assistant, using streaming. Output is streamed to both
+    // the passed "res" stream and to the console. Some extra debug output goes to the console only.
     const run = openai.beta.threads.runs.createAndStream( threadID, {
       assistant_id: assistantID
-    })// The chunk of code below simply decides what text is streamed to the output.
-      // At current basically all possible text is streamed to the ouput. 
-      // Each ".write" is executed twice. Once for res and once for process.stdout (the console).
-      .on('textCreated', (text) => {res.write('\nassistants > '), process.stdout.write('\nassistant > ')})
-      .on('textDelta', (textDelta, snapshot) => {res.write(textDelta.value), process.stdout.write(textDelta.value)})
-      .on('toolCallCreated', (toolCall) => {res.write(`\nassistant > ${toolCall.type}\n\n`), process.stdout.write(`\nassistant > ${toolCall.type}\n\n`)})
-      .on('toolCallDelta', (toolCallDelta, snapshot) => {
-        if (toolCallDelta.type === 'code_interpreter') {
-          if (toolCallDelta.code_interpreter.input) {
-            res.write(toolCallDelta.code_interpreter.input);
-            process.stdout.write(toolCallDelta.code_interpreter.input);
-          }
-          if (toolCallDelta.code_interpreter.outputs) {
-            res.write("\noutput >\n");
-            process.stdout.write("\noutput >\n");
-            toolCallDelta.code_interpreter.outputs.forEach(output => {
-              if (output.type === "logs") {
-                res.write(`\n${output.logs}\n`);
-                process.stdout.write(`\n${output.logs}\n`);
-              }
-            });
-          }
+    })
+
+    // The sections of code below decides what output is streamed to the frontend, and
+    // what parts are only logged to the console. "res" is the response stream of the calling
+    // function. "process.stdout" is the console.
+
+    // When a new response is returned by the Sssistant, print "Assistant > " to the console
+    .on('textCreated', (text) => process.stdout.write('\nAssistant > '))
+    
+    // When a new chunk of the response becomes readable, write it to the "res" stream and the console
+    .on('textDelta', (textDelta, snapshot) => { res.write(textDelta.value),
+      process.stdout.write(textDelta.value) })
+
+    // When a new tool call is started by the Assistant, print "Assistant > toolCall.type" to the console
+    .on('toolCallCreated', (toolCall) => process.stdout.write(`\nSssistant > ${toolCall.type}\n\n`))
+
+    // When a new chunk of response from the tool call becomes available, handle it as below
+    .on('toolCallDelta', (toolCallDelta, snapshot) => {
+      if (toolCallDelta.type === 'code_interpreter') {                // If the tool is code_interpreter
+        if (toolCallDelta.code_interpreter.input) {                   //   If chunk is an Assistant generated
+          process.stdout.write(toolCallDelta.code_interpreter.input); //   tool INPUT prompt, console log it
         }
-      });
-    res.end();                                               // Close the stream (helps frontend parsing)
-    return;                                                  // Return from function
+        if (toolCallDelta.code_interpreter.outputs) {                 //   If chunk is an Assistant generated
+          res.write("\nTool output >\n");                             //   tool OUTPUT, print "Tool output >"
+          process.stdout.write("\nTool output >\n");                  //   to the "res" stream and the console
+          toolCallDelta.code_interpreter.outputs.forEach(output => {  //   ForEach tool OUTPUT chunk
+            if (output.type === "logs") {                             //     If the output is a log
+              process.stdout.write(`\n${output.logs}\n`);             //       Write it to the console
+            }
+          });
+        }
+      }
+    });
+
+    res.end();                           // Close the stream when finished to signal end of response
+    return;                              // Return from the function
   } catch (error) {
-    console.error('Error: ', error);                         // Log the error message
-    throw error;                                             // Ensure error handling in the calling function
+    console.error('Error: ', error);     // If there is an error, log the error message
+    throw error;                         // Ensure error handling in the calling function
   }
 }
 
@@ -85,7 +95,7 @@ async function chatWithOpenAI(text, threadID, res) {
 app.post('/chat', async (req, res) => {
   try {
     const { message, threadID } = req.body;                              // Extract message and threadID from the request body
-    const responseFromAI = await chatWithOpenAI(message, threadID, res); // Interact with the Assistant (Return is through the "res" stream)
+    const responseFromAI = await chatWithOpenAI(message, threadID, res); // Interact with the Assistant through the "res" stream
     // console.log(responseFromAI.content.value);                        // Log the Assistant's response as a string
     // res.json({ message: responseFromAI.content.value });              // Return the Assistant's response as JSON
   } catch (error) {
