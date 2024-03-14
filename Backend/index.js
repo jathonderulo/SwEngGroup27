@@ -71,8 +71,8 @@ async function chatWithOpenAI(text, threadID, res) {
           }
         }
       });
-
-    return
+    res.end();                                               // Close the stream (helps frontend parsing)
+    return;                                                  // Return from function
   } catch (error) {
     console.error('Error: ', error);                         // Log the error message
     throw error;                                             // Ensure error handling in the calling function
