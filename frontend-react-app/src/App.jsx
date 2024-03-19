@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import ChatWindow from "./components/ChatWindow.jsx";
 import ChatInput from "./components/ChatInput.jsx";
 import AiAvatar from "./components/AiAvatar.jsx";
+import Menu from "./components/Menu.jsx";
 import "./styles/index.css";
 import "./styles/background.css";  
 
@@ -72,6 +73,7 @@ const InputOutputBox = () => {
         <div className="container-page">
         <ChatWindow messages={messages} />
         <AiAvatar />
+        <Menu/>
       </div>
         <ChatInput onSubmit={handleMessageSubmit} />
     </body>
