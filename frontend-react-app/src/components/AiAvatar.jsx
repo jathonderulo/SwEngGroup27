@@ -5,7 +5,19 @@ import "../styles/AiAvatar.css";
 // Delay (in ms) between each animation frame
 const frameInterval = 1000 / 5;
 
-export default function AiAvatar({ messages }) {
+export default function AiAvatar({
+  messages,
+  avatarStyle = "",
+  topType = "",
+  accessoriesType = "",
+  hairColor = "",
+  facialHairType = "",
+  clotheType = "",
+  clotheColor = "",
+  eyeType = "",
+  eyebrowType = "",
+  skinColor = "",
+}) {
   // TODO Add more transition frames for smooth speach animation
   const speakFrames = ["Smile", "Default"];
 
@@ -48,6 +60,16 @@ export default function AiAvatar({ messages }) {
             ? speakFrames[speakDuration % speakFrames.length]
             : "Default"
         }
+        avatarStyle={avatarStyle}
+        topType={topType}
+        accessoriesType={accessoriesType}
+        hairColor={hairColor}
+        facialHairType={facialHairType}
+        clotheType={clotheType}
+        clotheColor={clotheColor}
+        eyeType={eyeType}
+        eyebrowType={eyebrowType}
+        skinColor={skinColor}
       />
     </div>
   );
