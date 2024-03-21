@@ -5,8 +5,14 @@ const OpenAI = require('openai');
 
 const { OPENAI_API_KEY } = require('./config');
 
+const corsOptions = {
+  origin: 'http://localhost:5173', // or use '*' to allow any origin
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // to allow cookies to be sent with the request
+};
 
 const app = express();
+app.use(cors(corsOptions));
 const port = 3001;
 
 const openai = new OpenAI({
