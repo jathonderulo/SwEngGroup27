@@ -18,6 +18,23 @@ app.use(cors());
 // Assign the ID of the target assistant. This is a hard coded global variable.
 // Assistants can be created, deleted etc. from the assistant-editor.js file.
 const assistantID = 'asst_oANbAY9nu3G4i5ySHABCLUIB';
+let globalGender, globalAgeLow, globalAgeHigh, globalNationality;
+
+// This post request is used to store the persona data for the chat bot.
+// It gives the chat bot a persona that is more suited to the users
+// intrests.
+app.post('/persona-data', async (req, res) => {
+  try{
+    const {gender, ageLow, ageHigh, nationality} = req.body;
+    globalGender = gender;
+    globalAgeLow = ageLow;
+    globalAgeHigh = ageHigh;
+    globalNationality = nationality;
+    return;
+  } catch (error) {
+    console.error('Error: ', error);
+  }
+});
 
 // This post request is used to create a new thread. It is called
 // whenever a new instance of the frontend is created, so that each
