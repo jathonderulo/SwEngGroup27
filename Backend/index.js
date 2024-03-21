@@ -87,7 +87,7 @@ async function chatWithOpenAI(text, threadID, res) {
     })
     .on('textCreated', (text) => {
       process.stdout.write('\nAssistant > ');
-      res.write(`data: ${"..."}\n\n`);
+      res.write(`data: ${"..."}\n\n`); //Necessary for bubble creation do not delete
     })
     .on('textDelta', (textDelta, snapshot) => {
       // Format message in SSE format and send to client
