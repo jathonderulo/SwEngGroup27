@@ -34,7 +34,7 @@ const InputOutputBox = () => {
 
   useEffect(() => { //If console gives error here run "npm update openai"
     const eventSource = new EventSource('http://localhost:3001/stream');
-  
+    setIsLoading(true);
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
   
@@ -73,7 +73,7 @@ const InputOutputBox = () => {
       sender: "user"
     };
     setMessages((prevMessages) => [...prevMessages, newUserMessage]);
-    setIsLoading(true);
+    setIsLoading(false);
 
     if (!threadID) {
       console.error("ThreadID is not initialized yet.");
