@@ -5,7 +5,7 @@
 - Navigate to the Backend folder
 - Install the following
 `npm install openai axios body-parser cors express`
-'npm install dotenv'
+`npm install dotenv`
 - Run the server
 `node index.js`
 
