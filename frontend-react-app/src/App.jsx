@@ -34,7 +34,6 @@ const InputOutputBox = () => {
 
   useEffect(() => { //If console gives error here run "npm update openai"
     const eventSource = new EventSource('http://localhost:3001/stream');
-    setIsLoading(true);
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
   

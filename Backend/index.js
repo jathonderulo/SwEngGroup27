@@ -35,7 +35,7 @@ const StreamManager = {
 
   sendMessage: function (message) {
     this.streams.forEach(res => {
-      res.write(`data: ${JSON.stringify(message)}`);
+      res.write(`data: ${JSON.stringify(message)}\n\n`);
     });
   }
 };
@@ -87,12 +87,11 @@ async function chatWithOpenAI(text, threadID, res) {
     })
     .on('textCreated', (text) => {
       process.stdout.write('\nAssistant > ');
-      res.write(`data: ${"..."}\n\n`); //Necessary for bubble creation do not delete
+      res.write(`data: ${'...'}\n\n`); //Necessary for bubble creation
     })
     .on('textDelta', (textDelta, snapshot) => {
       // Format message in SSE format and send to client
       process.stdout.write(textDelta.value)
-      //StreamManager.sendMessage(textDelta.value);
       StreamManager.sendMessage({ type: 'textDelta', value: textDelta.value });
       //res.write(`data: ${JSON.stringify({ type: 'textDelta', value: textDelta.value })}\n\n`);
     })
@@ -136,17 +135,7 @@ app.post('/chat', async (req, res) => {
   try {
     const { message, threadID } = req.body;  
     
-    // Set headers for SSE
-    res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-    });
-
-    // Extract message and threadID from the request body
     const responseFromAI = await chatWithOpenAI(message, threadID, res); // Interact with the Assistant through the "res" stream
-    // console.log(responseFromAI.content.value);                        // Log the Assistant's response as a string
-    // res.json({ message: responseFromAI.content.value });              // Return the Assistant's response as JSON
   } catch (error) {
     console.error('Error processing chat message:', error);              // Catch and log any errors
     res.status(500).json({ error: error.message });                      // Send JSON error status back to frontend
