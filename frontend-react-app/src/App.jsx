@@ -32,30 +32,40 @@ const InputOutputBox = () => {
     initNewThread();
   }, []);
 
-  useEffect(() => { // If terminal gives error here run "npm update openai"
-    // Set up an EventSource to listen for messages from the server
+  useEffect(() => { //If console gives error here run "npm update openai"
     const eventSource = new EventSource('http://localhost:3001/stream');
-    console.log("Stream control running");
-
+  
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (data.type === 'textDelta') {
-        setMessages((prevMessages) => [...prevMessages, { text: data.value, sender: "ai" }]); // Gives new box for every text, needs fix
+  
+      // If it's the start of a new message, reset the current response
+      if (data.type === 'textDelta' && data.value.startsWith('...')) { // Assuming '...' denotes the start of a response
+        setMessages((prevMessages) => [...prevMessages, { text: '', sender: "ai" }]);
       }
+  
+      // If it's part of an ongoing message, append it
+      setMessages((prevMessages) => {
+        const newMessages = [...prevMessages];
+        const lastMessage = newMessages[newMessages.length - 1];
+  
+        if (lastMessage && lastMessage.sender === 'ai') {
+          lastMessage.text += data.value;
+        } else {
+          newMessages.push({ text: data.value, sender: "ai" });
+        }
+  
+        return newMessages;
+      });
     };
-
-    eventSource.onerror = () => {
-      console.error('EventSource error.');
+  
+    eventSource.onerror = (error) => {
+      console.error('EventSource error:', error);
       eventSource.close();
-      setIsLoading(false);
     };
-
-    // Store the EventSource reference in the window object if you need to close it later
-    window.currentEventSource = eventSource;
-
-    // Clean up the EventSource when the component unmounts
+  
     return () => eventSource.close();
   }, []);
+  
 
   const handleMessageSubmit = async (newMessageText) => {
     const newUserMessage = {

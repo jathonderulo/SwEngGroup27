@@ -35,7 +35,7 @@ const StreamManager = {
 
   sendMessage: function (message) {
     this.streams.forEach(res => {
-      res.write(`data: ${JSON.stringify(message)}\n\n`);
+      res.write(`data: ${JSON.stringify(message)}`);
     });
   }
 };
@@ -87,6 +87,7 @@ async function chatWithOpenAI(text, threadID, res) {
     })
     .on('textCreated', (text) => {
       process.stdout.write('\nAssistant > ');
+      res.write(`data: ${"..."}\n\n`);
     })
     .on('textDelta', (textDelta, snapshot) => {
       // Format message in SSE format and send to client
