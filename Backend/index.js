@@ -5,11 +5,43 @@ const OpenAI = require('openai');
 
 const { OPENAI_API_KEY } = require('./config');
 
+
 const app = express();
 const port = 3001;
 
 const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,
+});
+
+const StreamManager = {
+  streams: [],
+
+  addStream: function (res) {
+    this.streams.push(res);
+    res.on('close', () => {
+      this.removeStream(res);
+    });
+  },
+
+  removeStream: function (res) {
+    this.streams = this.streams.filter(s => s !== res);
+  },
+
+  sendMessage: function (message) {
+    this.streams.forEach(res => {
+      res.write(`data: ${JSON.stringify(message)}\n\n`);
+    });
+  }
+};
+
+app.get('/stream', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+  });
+
+  StreamManager.addStream(res);
 });
 
 app.use(bodyParser.json());
@@ -37,28 +69,26 @@ app.post('/new-thread', async (req, res) => {
 //   return: Nothing directly. All response is returned through the "res" stream
 async function chatWithOpenAI(text, threadID, res) {
   try {
-    // Add the user's message on to the current thread. Threads will store all messages
-    // created by the user and the Assistant.
-    const message = await openai.beta.threads.messages.create( threadID,
-      { role: "user", content: text }
-    );
+    // Add the user's message onto the current thread.
+    const message = await openai.beta.threads.messages.create(threadID, {
+      role: "user",
+      content: text
+    });
     
-    // Run the specified thread on the Assistant, using streaming. Output is streamed to both
-    // the passed "res" stream and to the console. Some extra debug output goes to the console only.
-    const run = openai.beta.threads.runs.createAndStream( threadID, {
+    // Run the specified thread on the Assistant, using streaming.
+    const run = openai.beta.threads.runs.createAndStream(threadID, {
       assistant_id: assistantID
     })
-
-    // The sections of code below decides what output is streamed to the frontend, and
-    // what parts are only logged to the console. "res" is the response stream of the calling
-    // function. "process.stdout" is the console.
-
-    // When a new response is returned by the Sssistant, print "Assistant > " to the console
-    .on('textCreated', (text) => process.stdout.write('\nAssistant > '))
-    
-    // When a new chunk of the response becomes readable, write it to the "res" stream and the console
-    .on('textDelta', (textDelta, snapshot) => { res.write(textDelta.value),
-      process.stdout.write(textDelta.value) })
+    .on('textCreated', (text) => {
+      process.stdout.write('\nAssistant > ');
+    })
+    .on('textDelta', (textDelta, snapshot) => {
+      // Format message in SSE format and send to client
+      process.stdout.write(textDelta.value)
+      //StreamManager.sendMessage(textDelta.value);
+      StreamManager.sendMessage({ type: 'textDelta', value: textDelta.value });
+      //res.write(`data: ${JSON.stringify({ type: 'textDelta', value: textDelta.value })}\n\n`);
+    })
 
     // When a new tool call is started by the Assistant, print "Assistant > toolCall.type" to the console
     .on('toolCallCreated', (toolCall) => process.stdout.write(`\nSssistant > ${toolCall.type}\n\n`))
@@ -84,8 +114,11 @@ async function chatWithOpenAI(text, threadID, res) {
     res.end();                           // Close the stream when finished to signal end of response
     return;                              // Return from the function
   } catch (error) {
-    console.error('Error: ', error);     // If there is an error, log the error message
-    throw error;                         // Ensure error handling in the calling function
+    console.error('Error: ', error);
+    res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
+    // Consider not closing the connection immediately on error,
+    // unless you want to terminate the stream.
+    // res.end();
   }
 }
 
@@ -94,7 +127,16 @@ async function chatWithOpenAI(text, threadID, res) {
 // The request body contains both the user message and the threadID.
 app.post('/chat', async (req, res) => {
   try {
-    const { message, threadID } = req.body;                              // Extract message and threadID from the request body
+    const { message, threadID } = req.body;  
+    
+    // Set headers for SSE
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    });
+
+    // Extract message and threadID from the request body
     const responseFromAI = await chatWithOpenAI(message, threadID, res); // Interact with the Assistant through the "res" stream
     // console.log(responseFromAI.content.value);                        // Log the Assistant's response as a string
     // res.json({ message: responseFromAI.content.value });              // Return the Assistant's response as JSON
