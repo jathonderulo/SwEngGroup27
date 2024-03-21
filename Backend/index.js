@@ -12,7 +12,7 @@ const corsOptions = {
 };
 
 const app = express();
-app.use(cors(corsOptions));
+app.use(cors(corsOptions)); // Necessary to allow streaming
 const port = 3001;
 
 const openai = new OpenAI({

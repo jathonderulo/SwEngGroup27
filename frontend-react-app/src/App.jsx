@@ -6,7 +6,6 @@ import "./styles/index.css";
 import "./styles/background.css";  
 
 
-
 const InputOutputBox = () => {
   const [messages, setMessages] = useState([]);
   const [threadID, setThreadID] = useState(null);
@@ -33,7 +32,7 @@ const InputOutputBox = () => {
     initNewThread();
   }, []);
 
-  useEffect(() => {
+  useEffect(() => { // If terminal gives error here run "npm update openai"
     // Set up an EventSource to listen for messages from the server
     const eventSource = new EventSource('http://localhost:3001/stream');
     console.log("Stream control running");
@@ -41,7 +40,7 @@ const InputOutputBox = () => {
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === 'textDelta') {
-        setMessages((prevMessages) => [...prevMessages, { text: data.value, sender: "ai" }]);
+        setMessages((prevMessages) => [...prevMessages, { text: data.value, sender: "ai" }]); // Gives new box for every text, needs fix
       }
     };
 
