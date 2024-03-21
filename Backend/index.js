@@ -35,7 +35,7 @@ const StreamManager = {
 
   sendMessage: function (message) {
     this.streams.forEach(res => {
-      res.write(`data: ${JSON.stringify(message)}\n\n`);
+      res.write(`data: ${JSON.stringify(message)}\n\n`); //back slashed ns here needed for SSE handling
     });
   }
 };
