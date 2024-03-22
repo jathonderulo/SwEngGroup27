@@ -119,6 +119,9 @@ app.post('/chat', async (req, res) => {
 });
 
 // Start the server on the specified port
-app.listen(port, () => {
+const server = app.listen(port, () => {   // set to const server for unit tests
   console.log(`Server is running on port ${port}`);          // Log message stating the port number
 });
+
+// necessary for the unit tests
+module.exports = {app, assistantID, server, port};
