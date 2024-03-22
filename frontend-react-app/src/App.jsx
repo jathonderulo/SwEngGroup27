@@ -36,7 +36,7 @@ const InputOutputBox = () => {
     const eventSource = new EventSource('http://localhost:3001/stream');
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
-  
+
       // If it's the start of a new message, reset the current response
       if (data.type === 'textDelta' && data.value.startsWith('...')) { // Assuming '...' denotes the start of a response
         setMessages((prevMessages) => [...prevMessages, { text: '', sender: "ai" }]);
@@ -46,13 +46,16 @@ const InputOutputBox = () => {
       setMessages((prevMessages) => {
         const newMessages = [...prevMessages];
         const lastMessage = newMessages[newMessages.length - 1];
-  
+
         if (lastMessage && lastMessage.sender === 'ai') {
-          lastMessage.text += data.value;
+          if(data.status == 'open') {   // This status is used to prevent mysterious repeated chunks
+            lastMessage.text += data.value;
+            data.status = 'closed';
+          }
         } else {
           newMessages.push({ text: data.value, sender: "ai" });
         }
-  
+
         return newMessages;
       });
     };
