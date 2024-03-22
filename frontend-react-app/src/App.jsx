@@ -37,36 +37,37 @@ const InputOutputBox = () => {
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      // If it's the start of a new message, reset the current response
-      if (data.type === 'textDelta' && data.value.startsWith('...')) { // Assuming '...' denotes the start of a response
-        setMessages((prevMessages) => [...prevMessages, { text: '', sender: "ai" }]);
-      }
-  
-      // If it's part of an ongoing message, append it
-      setMessages((prevMessages) => {
-        const newMessages = [...prevMessages];
-        const lastMessage = newMessages[newMessages.length - 1];
-
-        if (lastMessage && lastMessage.sender === 'ai') {
-          if(data.status == 'open') {   // This status is used to prevent mysterious repeated chunks
-            lastMessage.text += data.value;
-            data.status = 'closed';
-          }
-        } else {
-          newMessages.push({ text: data.value, sender: "ai" });
+      if (data.type === 'textDelta') {
+        if (isLoading) {
+          setIsLoading(false);
         }
 
-        return newMessages;
-      });
+        setMessages((prevMessages) => {
+          const newMessages = [...prevMessages];
+          let lastMessage = newMessages[newMessages.length - 1];
+
+          if (lastMessage && lastMessage.sender === 'ai') {
+            if(data.status === 'open') {
+              lastMessage.text += data.value;
+              data.status = 'closed';
+            }
+          } else {
+            newMessages.push({ text: data.value, sender: "ai" });
+          }
+
+          return newMessages;
+        });
+      }
     };
-  
+
     eventSource.onerror = (error) => {
       console.error('EventSource error:', error);
+      setIsLoading(false);
       eventSource.close();
     };
-  
+
     return () => eventSource.close();
-  }, []);
+  }, [isLoading]);
   
 
   const handleMessageSubmit = async (newMessageText) => {
@@ -75,7 +76,7 @@ const InputOutputBox = () => {
       sender: "user"
     };
     setMessages((prevMessages) => [...prevMessages, newUserMessage]);
-    setIsLoading(false);
+    setIsLoading(true);
 
     if (!threadID) {
       console.error("ThreadID is not initialized yet.");
@@ -94,7 +95,8 @@ const InputOutputBox = () => {
       });
     } catch (error) {
       console.error('Error sending message:', error);
-      setIsLoading(false);
+    } finally {
+      setIsLoading(false); // Stop loading when the response is received or there is an error
     }
   };
 
