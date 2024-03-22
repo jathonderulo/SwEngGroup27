@@ -11,7 +11,9 @@ const openai = new OpenAI({
 // as some of these functions can be damaging if run accidentally.
 // Uncomment function calls to use them.
 async function main() {
-  listAllAssistants();
+  // listAllAssistants();
+  listFiles();
+  // logRecentAssistant();
 
   // Uncomment the function below to create a new Assistant. Pass three params:
   //   - assistantName
@@ -25,19 +27,34 @@ async function main() {
   //  "./data-sets/survey-answers-all.json");
 }
 
+// This function creates a thread and logs its ID
+async function createThread() {
+  const thread = await openai.beta.threads.create();        // Create a new thread
+  console.log(thread.id);                                   // Log the thread ID
+}
+
 // This function creates an assistant and a file and then connects the two
 async function initializeAssistant(name, instructions, filePath) {
-  assistantID = await createAssistant(name, instructions);
-  fileID = await createFile(filePath);
-  await uploadFile(assistantID, fileID);
-  console.log(assistantID);
+  assistantID = await createAssistant(name, instructions);  // Create an assistant using the params
+  fileID = await createFile(filePath);                      // Create a file from param path
+  await uploadFile(assistantID, fileID);                    // Attach this file and assistant
+  console.log(assistantID);                                 // Log the new assistant's ID
 }
 
 // This function retrieves a list of all assistants stored on OpenAI's servers
 // under the organistion tied to the current key
 async function listAllAssistants() {
-  const list = await openai.beta.assistants.list();
-  console.log(list);
+  const list = await openai.beta.assistants.list();         // Retrieve a list of our assistants from OpenAI
+  console.log(list);                                        // Log this list in full
+}
+
+// This function logs the info of the most recent assistant
+async function logRecentAssistant() {
+  const list = await openai.beta.assistants.list();         // Retrieve assistant list
+  const assistantID = list.body.first_id;                   // Extract ID of most recent from list
+  const assistant = await openai.beta.assistants.retrieve(assistantID); // Retrieve that assistant
+  console.log(assistant);                                   // Log its info
+  return assistant;                                         // And return its info
 }
 
 // This function creates an assistant using the openAI NodeJS library
@@ -76,6 +93,17 @@ async function uploadFile(assistantID, fileID) {
     assistantID, { file_id: fileID }              // assistantID and fileID from parameters
   );
   console.log(assistantFile);                     // Log the assistant.file information
+}
+
+async function listFiles() {
+  const fileList = await openai.files.list();
+  console.log(fileList);
+}
+
+// This function deletes the specified assistant
+async function deleteAssistant(assistantID) {
+  await openai.beta.assistants.del(assistantID);  // Delete assistant with the passed ID parameter
+  console.log("Deleted "+assistantID);            // Log the deletion
 }
 
 main();

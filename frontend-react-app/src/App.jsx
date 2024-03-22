@@ -1,102 +1,92 @@
-import { useState, useEffect, useRef } from 'react';
-import "./index.css";
+import React, { useState, useEffect, useRef } from "react";
+import ChatWindow from "./components/ChatWindow.jsx";
+import ChatInput from "./components/ChatInput.jsx";
+import AiAvatar from "./components/AiAvatar.jsx";
+import "./styles/index.css";
+import "./styles/background.css";  
+import axios from 'axios';
 
 const InputOutputBox = () => {
-  const [inputText, setInputText] = useState('');
-  const [displayText, setDisplayText] = useState('');
-  const [threadID, setThreadID] = useState('');           // threadID used to seperate different user's conversation
-  const textAreaRef = useRef(null);
+  const [messages, setMessages] = useState([]);
+  const [threadID, setThreadID] = useState(null); // State to store the dynamic threadID
+  const [isLoading, setIsLoading] = useState(false); //state of the loading message
 
-  // This function sends a get request to the backend, which results in a new
-  // thread being created. This new thread's ID is then returned to this functon
-  // where it is assigned to the threadID variable
-  const getThread = async () => {
-    try {
-      const response = await fetch('http://localhost:3001/new-thread',);  // Sends the GET request
-      const data = await response.json();                 // Retrieve JSON from the response
-      setThreadID(data.threadID);                         // Set threadID to the threadID string
-    } catch (error) {
-      console.error('Error creating thread: ', error);    //  Catch and log errors
-    }
-  }
+  useEffect(() => {
+    // Function to initialize a new thread
+    const initNewThread = async () => {
+      try {
+        const response = await axios.post('http://localhost:3001/new-thread');
+        setThreadID(response.data.threadID); // Store the threadID from the response
+      } catch (error) {
+        console.error('Error initializing new thread:', error);
+      }
+    };
+
+    initNewThread();
+  }, []);
+
+  const handleMessageSubmit = async (newMessageText) => {
+    // Construct a new message object for the user message
+    const newUserMessage = {
+      text: newMessageText.text,
+      sender: "user" // message is from the user
+    };
   
-  // Check if threadID is yet to be set
-  // There is probably a far cleaner way of doing this, if someone from frontend could
-  // simplify this please do. 
-  if(threadID === '') {
-    getThread();                                          // If so, set it to the ID of a new thread
-  }
-
-  const handleInputChange = (e) => {
-    setInputText(e.target.value);
-  };
-
-  const handleSend = async () => {
+    // Add the new user message to the chat window immediately
+    setMessages((prevMessages) => [...prevMessages, newUserMessage]);
+    setIsLoading(true); // Show loading indicator
+  
+    if (!threadID) {
+      console.error("ThreadID is not initialized yet.");
+      setIsLoading(false);
+      return;
+    }
+  
     try {
       const requestBody = {
-        message: inputText,
-        threadID: threadID,                               // threadID is included in req.body
+        message: newMessageText.text,
+        threadID,
       };
-
-      const response = await fetch('http://localhost:3001/chat', {
-        method: 'POST',
+  
+      const response = await fetch("http://localhost:3001/chat", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
       });
-
+  
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+  
       const data = await response.json();
-      setDisplayText(prev => prev + '\n' + data.message); // Append new message to the display
-
+      setIsLoading(false); // Hide loading indicator
+  
+      // Construct a new message object for the AI response
+      const newAiMessage = {
+        text: data.message,
+        sender: "ai" // Indicating this message is from the AI
+      };
+  
+      // Add the AI response to the chat window
+      setMessages((prevMessages) => [...prevMessages, newAiMessage]);
     } catch (error) {
-      console.error('Error fetching data:', error);
-      setDisplayText('Error: Unable to fetch data from the server');
-    }
-
-    setInputText('');                                     // Clear input field
-  };
-
-  const resizeTextArea = () => {
-    textAreaRef.current.style.height = "auto";
-    textAreaRef.current.style.height = textAreaRef.current.scrollHeight + "px";
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+      console.error("Error sending message:", error);
+      setIsLoading(false);
     }
   };
-
-  useEffect(resizeTextArea, [inputText]);
+  
+  
 
   return (
     <body>
-      <div className='header'>header</div>
-      <div className='container'>
-        <div className="output">
-          <textarea value={displayText} readOnly className="output-box"/>
-        </div>  
-        <div className="input">
-          <textarea
-            type="text" 
-            value={inputText} 
-            onChange={handleInputChange} 
-            placeholder='Type here...'
-            className="input-box"
-            rows={1}
-            ref={textAreaRef}
-            onKeyDown={handleKeyDown}
-          />
-          <button onClick={handleSend} className="send-button">Send </button>
-          
-        </div>
+      <div className="main-container"></div>
+        <div className="container-page">
+        <ChatWindow messages={messages} isLoading={isLoading}/>
+        <AiAvatar />
       </div>
+        <ChatInput onSubmit={handleMessageSubmit} />
     </body>
   );
 };

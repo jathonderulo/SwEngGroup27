@@ -1,0 +1,53 @@
+.container-chat {
+  margin-left: 2.5%;
+  margin-top: 2.5%;
+  border-radius: 15px;
+  width: 65vw;
+  height: 80vh;
+  overflow-y: auto; /* Enable vertical scrolling if needed */
+  border: 1px solid #FFFFFF; /* Optional: Add border for visual clarity */
+  background-color: rgba(255, 255, 255, 0.55); /* White background with 50% opacity */
+  display: flex;
+  flex-direction: column; /* Ensures messages are stacked vertically */
+  padding: 0px;
+}
+.container-chat::-webkit-scrollbar {
+  display: none !important;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+.container-message {
+  margin: 5px 10px; /* Adds margin around each message for spacing */
+  padding: 10px; /* Adds padding inside each message for content spacing */
+  border-radius: 10px; /* Rounds the corners of the message bubbles */
+  max-width: 80%; /* Limits the maximum width of a message */
+  
+}
+
+
+
+.user-message {
+  background-color: #dcf8c6; /* Light green background for user messages */
+  margin-left: auto; /* Aligns the message to the right */
+  margin-right: 10px; /* Ensures consistent margin on the right */
+}
+
+.ai-message {
+  background-color: #f0f0f0; /* Light grey background for AI messages */
+  margin-left: 10px; /* Ensures consistent margin on the left */
+  align-self: flex-start; /* Keeps AI messages aligned to the left */
+}
+
+.loading {
+  font: 24px;
+}
+
+.loading p {
+  text-align: left; /* Align text to the left, similar to AI messages */
+  margin: 0 auto; /* Center the dots in the container if needed */
+}
+
+
