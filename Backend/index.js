@@ -46,7 +46,7 @@ app.get('/stream', (req, res) => {
     'Cache-Control': 'no-cache',
     'Connection': 'keep-alive',
   });
-  
+
   StreamManager.addStream(res);
 });
 
