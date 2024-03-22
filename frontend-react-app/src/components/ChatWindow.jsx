@@ -29,18 +29,18 @@ export default function ChatWindow({ messages, isLoading }) {
   }
 
   return (
-    <div className="container-chat">
-      {messages.map((message, index) => (
-        <div key={index} className={getMessageClasses(message.sender)}>
-          <p style={{ whiteSpace: "pre-line" }}>{message.text}</p>
-        </div>
-      ))}
-      {isLoading && (
-        <div className="container-message loading">
-          <p>{loadingText}</p>
-        </div>
-      )}
-      <div ref={windowEnd} />
-    </div>
+      <div className="container-chat">
+        {messages.map((message, index) => (
+            <div key={index} className={getMessageClasses(message.sender)}>
+              <p style={{ whiteSpace: "pre-line" }}>{message.text}</p>
+            </div>
+        ))}
+        {isLoading && (
+            <div className={getMessageClasses("ai") + " loading"}>
+              <p>{loadingText}</p>
+            </div>
+        )}
+        <div ref={windowEnd} />
+      </div>
   );
 }
