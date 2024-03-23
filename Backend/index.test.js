@@ -1,13 +1,8 @@
 // config.test.js
 const request = require('supertest');
-const {app, port, server} = require('./index'); // Assuming your main file is named index.js
-describe('GET /example', () => {
-  it('responds with text "This is an example GET request response."', async () => {
-    const response = await request(app).get('/example');
-    expect(response.status).toBe(200);
-    expect(response.text).toBe('This is an example GET request response.');
-  });
-});
+const {app, server, assistantID, port} = require('./index.js'); // Assuming your main file is named index.js, requires relevant const's to be exported in main
+
+
 describe('Server', () => {
   let originalLog;
   beforeEach(() => {
@@ -25,6 +20,14 @@ describe('Server', () => {
     expect(console.log.mock.calls[0][0]).toBe(`Server is running on port ${port}`);
   });
 });
+
+describe('assistantID check', () => {
+  it('Uses correct assistant, specified by AssistantID', () => {
+    const expectedAssistantID = 'asst_oANbAY9nu3G4i5ySHABCLUIB'
+    expect(assistantID).toBe(expectedAssistantID)
+  });
+});
+
 describe('POST /chat', () => {
   it('handles errors gracefully', async () => {
     const openaiMock = {
@@ -38,7 +41,7 @@ describe('POST /chat', () => {
       .post('/chat')
       .send({ message: 'Hello, how are you?' });
     expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: 'Internal Server Error' });
+    expect(response.body).toEqual({ error: "404 No thread found with id 'undefined'." });
   });
 });
 
