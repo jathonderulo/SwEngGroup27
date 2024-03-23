@@ -2,6 +2,7 @@
 const request = require('supertest');
 const {app, server, assistantID, port} = require('./index.js'); // Assuming your main file is named index.js, requires relevant const's to be exported in main
 
+
 describe('Server', () => {
   let originalLog;
   beforeEach(() => {
@@ -15,7 +16,6 @@ describe('Server', () => {
   });
   it('logs "Server is running on port 3001"', () => {
     // Expect console.log to have been called with the correct message
-    //const port = 3001
     console.log("Server is running on port 3001")
     expect(console.log.mock.calls[0][0]).toBe(`Server is running on port ${port}`);
   });
