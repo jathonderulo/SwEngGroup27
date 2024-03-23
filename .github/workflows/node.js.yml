@@ -15,6 +15,7 @@ jobs:
   build:
     #environment: OPENAI_API_KEY
     runs-on: ubuntu-latest
+    environment: OPENAI_API_KEY # i really should've gave it a better name ...
     env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     defaults:
