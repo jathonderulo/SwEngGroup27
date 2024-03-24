@@ -4,9 +4,10 @@ import "../styles/ChatWindow.css";
 
 export default function ChatWindow({ messages, isLoading }) {
   const windowEnd = useRef(null);
-  const [loadingText, setLoadingText] = useState("...");
+  const [loadingText, setLoadingText] = useState("..."); // State for the loading text, initialized with dots
 
   useEffect(() => {
+    // This effect updates the loadingText every 500ms to animate loading dots
     const intervalId = setInterval(() => {
       setLoadingText((prev) => prev.length < 3 ? prev + "." : "");
     }, 500);

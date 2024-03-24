@@ -9,6 +9,7 @@ import "./styles/background.css";
 const InputOutputBox = () => {
   const [messages, setMessages] = useState([]);
   const [threadID, setThreadID] = useState(null);
+  // State to control the loading indicator visibility. Initially, no loading is happening
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -36,10 +37,10 @@ const InputOutputBox = () => {
     const eventSource = new EventSource('http://localhost:3001/stream');
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
-
+      // Logic handling incoming messages. If isLoading is true, it's set to false, indicating loading has finished.
       if (data.type === 'textDelta') {
         if (isLoading) {
-          setIsLoading(false);
+          setIsLoading(false); // Turns off loading indicator once data is received
         }
 
         setMessages((prevMessages) => {
@@ -62,7 +63,7 @@ const InputOutputBox = () => {
 
     eventSource.onerror = (error) => {
       console.error('EventSource error:', error);
-      setIsLoading(false);
+      setIsLoading(false); // Turns off loading indicator in case of an error
       eventSource.close();
     };
 
@@ -76,7 +77,7 @@ const InputOutputBox = () => {
       sender: "user"
     };
     setMessages((prevMessages) => [...prevMessages, newUserMessage]);
-    setIsLoading(true);
+    setIsLoading(true);  // Turns on the loading dots when a new message is submitted
 
     if (!threadID) {
       console.error("ThreadID is not initialized yet.");
@@ -95,6 +96,7 @@ const InputOutputBox = () => {
       });
     } catch (error) {
       console.error('Error sending message:', error);
+      // Finally block to ensure the loading indicator is turned off after the attempt to send a message
     } finally {
       setIsLoading(false); // Stop loading when the response is received or there is an error
     }
