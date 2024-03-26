@@ -1,51 +1,54 @@
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import '../../styles/Select.css';
 
 function Select(){
-    const [countries, setCountries] = useState([]);
-    const [loading, setLoading] = useState(false);
-    
-    useEffect(() => {
-        const fetchCountries = async () => {
-          setLoading(true);
-          try {
-            const response = await fetch('https://restcountries.com/v3.1/all');
-            if (!response.ok) {
-              throw new Error('Failed to fetch countries');
-            }
-            const data = await response.json();
-            const countryOptions = data.map(country => ({
-              label: country.name.common, 
-              value: country.cca2, 
-            }))
-            .sort((a, b) => a.label.localeCompare(b.label)); // Sort countries alphabetically
-      
-            setCountries(countryOptions);
-          } catch (error) {
-            console.error("Error fetching countries:", error);
-          } finally {
-            setLoading(false);
-          }
-        };
-      
-        fetchCountries();
-      }, []);
+    const [countries, setCountries] = useState('');
+
+    const irishCounties = [
+      { label: 'Carlow', value: 'CW' },
+      { label: 'Cavan', value: 'CN' },
+      { label: 'Clare', value: 'CE' },
+      { label: 'Cork', value: 'CO' },
+      { label: 'Donegal', value: 'DL' },
+      { label: 'Dublin', value: 'D' },
+      { label: 'Galway', value: 'G' },
+      { label: 'Kerry', value: 'KY' },
+      { label: 'Kildare', value: 'KE' },
+      { label: 'Kilkenny', value: 'KK' },
+      { label: 'Laois', value: 'LS' },
+      { label: 'Leitrim', value: 'LM' },
+      { label: 'Limerick', value: 'LK' },
+      { label: 'Longford', value: 'LD' },
+      { label: 'Louth', value: 'LH' },
+      { label: 'Mayo', value: 'MO' },
+      { label: 'Meath', value: 'MH' },
+      { label: 'Monaghan', value: 'MN' },
+      { label: 'Offaly', value: 'OY' },
+      { label: 'Roscommon', value: 'RN' },
+      { label: 'Sligo', value: 'SO' },
+      { label: 'Tipperary', value: 'TA' },
+      { label: 'Waterford', value: 'WD' },
+      { label: 'Westmeath', value: 'WH' },
+      { label: 'Wexford', value: 'WX' },
+      { label: 'Wicklow', value: 'WW' }
+  ];
+
       
       return (
         <div>
-          {loading ? (
-            <p className='loading'>Loading countries...</p>
-          ) : (
-            <select className="selected-country" defaultValue="">
-              <option value=""> </option>
-              {countries.map(country => (
-                <option key={country.value} value={country.value}>
-                  {country.label}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+        <select 
+          className="selected-country" 
+          value={countries} 
+          onChange={(e) => setCountries(e.target.value)}
+        >
+          <option value=""></option>
+          {irishCounties.map(county => (
+            <option key={county.value} value={county.value}>
+              {county.label}
+            </option>
+          ))}
+        </select>
+    </div>
       );
     
 }
