@@ -1,19 +1,26 @@
 import React, { useRef, useEffect, useState } from "react";
 import "../styles/ChatWindow.css";
 
-
 export default function ChatWindow({ messages, isLoading }) {
   const windowEnd = useRef(null);
-  const [loadingText, setLoadingText] = useState("..."); // State for the loading text, initialized with dots
+  const [loadingText, setLoadingText] = useState(""); // Initializing without dots
 
-  useEffect(() => {
-    // This effect updates the loadingText every 500ms to animate loading dots
-    const intervalId = setInterval(() => {
-      setLoadingText((prev) => prev.length < 3 ? prev + "." : "");
-    }, 500);
+    useEffect(() => {
+      // Updates loadingText with 0 to 3 dots
+    const updateLoadingDots = () => {
+      setLoadingText((currentText) => {
+        const dotCount = currentText.length < 3 ? currentText.length + 1 : 0;
+        return '.'.repeat(dotCount);
+      });
+    };
 
+      // Set interval for dot animation
+    const intervalId = setInterval(updateLoadingDots, 500);
+
+      // Clear interval on unmount
     return () => clearInterval(intervalId);
   }, []);
+
 
   useEffect(() => {
     windowEnd.current?.scrollIntoView({ behavior: "smooth" });
