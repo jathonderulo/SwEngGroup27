@@ -7,7 +7,7 @@ const { OPENAI_API_KEY } = require('./config');
 
 const corsOptions = {
   origin: 'http://localhost:5173', // or use '*' to allow any origin
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   credentials: true, // to allow cookies to be sent with the request
 };
 
@@ -95,6 +95,7 @@ app.post('/chat', async (req, res) => {
       process.stdout.write(textDelta.value)
       // Format message in SSE format and send to client
       StreamManager.sendMessage({ status: 'open', type: 'textDelta', value: textDelta.value });
+      res.send()                          // Without this response will reach failure at 5 requests
     })
 
     // When a new tool call is started by the Assistant, print "Assistant > toolCall.type" to the console
@@ -114,7 +115,7 @@ app.post('/chat', async (req, res) => {
       }
     });
 
-    return;                                                           // Return from the function
+    return ;                                                           // Return from the function
   } catch (error) {
     console.error('Error processing chat message:', error);           // Catch and log any errors
     res.status(500).json({ error: error.message });                   // Send JSON error status back to frontend

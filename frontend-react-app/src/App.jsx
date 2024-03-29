@@ -14,6 +14,7 @@ const InputOutputBox = () => {
   useEffect(() => {
     // Function to initialize a new thread
     const initNewThread = async () => {
+      console.log("Thread Created.")
       try {
         const response = await fetch('http://localhost:3001/new-thread', {
           method: 'POST',
@@ -55,21 +56,19 @@ const InputOutputBox = () => {
         } else {
           newMessages.push({ text: data.value, sender: "ai" });
         }
-
         return newMessages;
       });
     };
-  
+    
     eventSource.onerror = (error) => {
       console.error('EventSource error:', error);
-      eventSource.close();
+      return () => eventSource.close();
     };
-  
     return () => eventSource.close();
   }, []);
   
 
-  const handleMessageSubmit = async (newMessageText) => {
+  const handleMessageSubmit = (newMessageText) => {
     const newUserMessage = {
       text: newMessageText.text,
       sender: "user"
@@ -83,20 +82,25 @@ const InputOutputBox = () => {
       return;
     }
 
-    try {
-      // Send the user message to the server using a POST request
-      await fetch('http://localhost:3001/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: newUserMessage.text, threadID }),
-      });
-    } catch (error) {
+    console.log("User req sent.");
+    fetch('http://localhost:3001/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: newUserMessage.text, threadID }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    })
+    .catch(error => {
       console.error('Error sending message:', error);
       setIsLoading(false);
-    }
-  };
+    });
+};
+
 
   return (
   <body>
