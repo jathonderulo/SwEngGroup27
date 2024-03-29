@@ -75,6 +75,7 @@ app.post('/new-thread', async (req, res) => {
 //   return: Nothing directly. All response is returned through the "res" stream
 app.post('/chat', async (req, res) => {
   try {
+    var resolvePostRequest = false;
     const { message, threadID } = req.body;  
     
     // Add the user's message onto the current thread.
@@ -95,7 +96,10 @@ app.post('/chat', async (req, res) => {
       process.stdout.write(textDelta.value)
       // Format message in SSE format and send to client
       StreamManager.sendMessage({ status: 'open', type: 'textDelta', value: textDelta.value });
-      res.send()                          // Without this response will reach failure at 5 requests
+      if(resolvePostRequest==false){
+        res.send()                          // Without this response will reach failure at 5 requests
+        resolvePostRequest =true;
+      }
     })
 
     // When a new tool call is started by the Assistant, print "Assistant > toolCall.type" to the console
