@@ -14,7 +14,6 @@ const InputOutputBox = () => {
   useEffect(() => {
     // Function to initialize a new thread
     const initNewThread = async () => {
-      console.log("Thread Created.")
       try {
         const response = await fetch('http://localhost:3001/new-thread', {
           method: 'POST',
@@ -82,7 +81,6 @@ const InputOutputBox = () => {
       return;
     }
 
-    console.log("User req sent.");
     fetch('http://localhost:3001/chat', {
       method: 'POST',
       headers: {
