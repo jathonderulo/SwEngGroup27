@@ -73,7 +73,6 @@ const InputOutputBox = () => {
         <div className="container-page">
         <ChatWindow messages={messages} />
         <AiAvatar />
-        <Shirt />
       </div>
         <ChatInput onSubmit={handleMessageSubmit} />
     </body>

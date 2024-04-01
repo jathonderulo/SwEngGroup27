@@ -9,7 +9,7 @@
     background-size: cover;
     background-position: center;
     filter: blur(4px);
-    transform: scale(1.02);
+    transform: scale(1);
     opacity: 90%;
     z-index: -1;
 }
