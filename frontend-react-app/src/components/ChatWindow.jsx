@@ -1,18 +1,26 @@
 import React, { useRef, useEffect, useState } from "react";
 import "../styles/ChatWindow.css";
 
-
 export default function ChatWindow({ messages, isLoading }) {
   const windowEnd = useRef(null);
-  const [loadingText, setLoadingText] = useState("...");
+  const [loadingText, setLoadingText] = useState(""); // Initializing without dots
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setLoadingText((prev) => prev.length < 3 ? prev + "." : "");
-    }, 500);
+    useEffect(() => {
+      // Updates loadingText with 0 to 3 dots
+    const updateLoadingDots = () => {
+      setLoadingText((currentText) => {
+        const dotCount = currentText.length < 3 ? currentText.length + 1 : 0;
+        return '.'.repeat(dotCount);
+      });
+    };
 
+      // Set interval for dot animation
+    const intervalId = setInterval(updateLoadingDots, 500);
+
+      // Clear interval on unmount
     return () => clearInterval(intervalId);
   }, []);
+
 
   useEffect(() => {
     windowEnd.current?.scrollIntoView({ behavior: "smooth" });
@@ -29,18 +37,18 @@ export default function ChatWindow({ messages, isLoading }) {
   }
 
   return (
-    <div className="container-chat">
-      {messages.map((message, index) => (
-        <div key={index} className={getMessageClasses(message.sender)}>
-          <p style={{ whiteSpace: "pre-line" }}>{message.text}</p>
-        </div>
-      ))}
-      {isLoading && (
-        <div className="container-message loading">
-          <p>{loadingText}</p>
-        </div>
-      )}
-      <div ref={windowEnd} />
-    </div>
+      <div className="container-chat">
+        {messages.map((message, index) => (
+            <div key={index} className={getMessageClasses(message.sender)}>
+              <p style={{ whiteSpace: "pre-line" }}>{message.text}</p>
+            </div>
+        ))}
+        {isLoading && (
+            <div className={getMessageClasses("ai") + " loading"}>
+              <p>{loadingText}</p>
+            </div>
+        )}
+        <div ref={windowEnd} />
+      </div>
   );
 }
