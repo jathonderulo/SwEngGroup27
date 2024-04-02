@@ -37,28 +37,28 @@ const InputOutputBox = () => {
     const eventSource = new EventSource('http://localhost:3001/stream');
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
+
       // Logic handling incoming messages. If isLoading is true, it's set to false, indicating loading has finished.
-      if (data.type === 'textDelta') {
-        if (isLoading) {
-          setIsLoading(false); // Turns off loading indicator once data is received
+      // NB This code currently causes missing output chunks sometimes
+      if(isLoading) {
+        setIsLoading(false);
+      }
+
+      setMessages((prevMessages) => {
+        const newMessages = [...prevMessages];
+        const lastMessage = newMessages[newMessages.length - 1];
+
+        if (lastMessage && lastMessage.sender === 'ai') {
+          if(data.status === 'open') {
+            lastMessage.text += data.value;
+            data.status = 'closed';
+          }
+        } else {
+          newMessages.push({ text: data.value, sender: "ai" });
         }
 
-        setMessages((prevMessages) => {
-          const newMessages = [...prevMessages];
-          let lastMessage = newMessages[newMessages.length - 1];
-
-          if (lastMessage && lastMessage.sender === 'ai') {
-            if(data.status === 'open') {
-              lastMessage.text += data.value;
-              data.status = 'closed';
-            }
-          } else {
-            newMessages.push({ text: data.value, sender: "ai" });
-          }
-
-          return newMessages;
-        });
-      }
+        return newMessages;
+      });
     };
 
     eventSource.onerror = (error) => {
@@ -71,7 +71,7 @@ const InputOutputBox = () => {
   }, [isLoading]);
   
 
-  const handleMessageSubmit = async (newMessageText) => {
+  const handleMessageSubmit = (newMessageText) => {
     const newUserMessage = {
       text: newMessageText.text,
       sender: "user"
@@ -85,21 +85,23 @@ const InputOutputBox = () => {
       return;
     }
 
-    try {
-      // Send the user message to the server using a POST request
-      await fetch('http://localhost:3001/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: newUserMessage.text, threadID }),
-      });
-    } catch (error) {
+    // Send the user message to the server using a POST request
+    fetch('http://localhost:3001/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: newUserMessage.text, threadID }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    })
+    .catch (error => {
       console.error('Error sending message:', error);
-      // Finally block to ensure the loading indicator is turned off after the attempt to send a message
-    } finally {
-      setIsLoading(false); // Stop loading when the response is received or there is an error
-    }
+      setIsLoading(false);
+    });
   };
 
   return (

@@ -7,7 +7,7 @@ const { OPENAI_API_KEY } = require('./config');
 
 const corsOptions = {
   origin: 'http://localhost:5173', // or use '*' to allow any origin
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   credentials: true, // to allow cookies to be sent with the request
 };
 
@@ -75,6 +75,8 @@ app.post('/new-thread', async (req, res) => {
 //   return: Nothing directly. All response is returned through the "res" stream
 app.post('/chat', async (req, res) => {
   try {
+    var resolvePostRequest = false;
+    var firstReturnIgnored = false;
     const { message, threadID } = req.body;  
     
     // Add the user's message onto the current thread.
@@ -89,16 +91,25 @@ app.post('/chat', async (req, res) => {
     })
     .on('textCreated', (text) => {
       process.stdout.write('\nAssistant > ');
+      if(firstReturnIgnored) {
+        StreamManager.sendMessage({ status: 'open', type: 'textDelta', value: "\n\n" });
+      } else {
+        firstReturnIgnored = true;
+      }
       // res.write(`data: ${'...'}\n\n`); //Necessary for bubble creation
     })
     .on('textDelta', (textDelta, snapshot) => {
       process.stdout.write(textDelta.value)
       // Format message in SSE format and send to client
       StreamManager.sendMessage({ status: 'open', type: 'textDelta', value: textDelta.value });
+      if(resolvePostRequest==false){
+        res.send()
+        resolvePostRequest = true;
+      }
     })
 
     // When a new tool call is started by the Assistant, print "Assistant > toolCall.type" to the console
-    .on('toolCallCreated', (toolCall) => process.stdout.write(`\nSssistant > ${toolCall.type}\n\n`))
+    .on('toolCallCreated', (toolCall) => process.stdout.write(`\nAssistant > ${toolCall.type}\n\n`))
 
     // When a new chunk of response from the tool call becomes available, handle it as below
     .on('toolCallDelta', (toolCallDelta, snapshot) => {

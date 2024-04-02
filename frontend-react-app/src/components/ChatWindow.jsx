@@ -6,10 +6,10 @@ export default function ChatWindow({ messages, isLoading }) {
   const [loadingText, setLoadingText] = useState(""); // Initializing without dots
 
     useEffect(() => {
-      // Updates loadingText with 0 to 3 dots
+      // Updates loadingText with 1 to 3 dots
     const updateLoadingDots = () => {
       setLoadingText((currentText) => {
-        const dotCount = currentText.length < 3 ? currentText.length + 1 : 0;
+        const dotCount = currentText.length < 3 ? currentText.length + 1 : 1;
         return '.'.repeat(dotCount);
       });
     };
