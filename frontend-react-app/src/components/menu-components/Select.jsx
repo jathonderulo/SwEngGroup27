@@ -2,7 +2,7 @@ import { useState} from 'react';
 import '../../styles/Select.css';
 
 function Select(){
-    const [countries, setCountries] = useState('D');
+    const [counties, setCounties] = useState('D');
 
     const irishCounties = [
       { label: 'Dublin', value: 'D'},
@@ -16,9 +16,10 @@ function Select(){
       return (
         <div>
         <select 
-          className="selected-country" 
-          value={countries} 
-          onChange={(e) => setCountries(e.target.value)}
+          name="county"
+          className="selected-county" 
+          value={counties} 
+          onChange={(e) => setCounties(e.target.value)}
         >
           <option value=""></option>
           {irishCounties.map(county => (

@@ -26,6 +26,13 @@ function Menu() {
 function DropdownMenu({ onClose }) {
 
   const handleSend = async () => {
+    event.preventDefault(); // Prevent the form from causing a page reload
+        
+    const formData = new FormData(event.target);
+    const gender = formData.get('gender');
+    const ageIndex = formData.get('ageRangeIndex');
+    const county = formData.get('county');
+    
     // POST request to send persona info to the backend, where it is is parsed into indexes
     // for selecting the correct fileID from a 3D array.
     // Check console logs in backend terminal to see what values are received on the backend from
@@ -35,7 +42,7 @@ function DropdownMenu({ onClose }) {
       headers: {
         'Content-Type': 'application/json',
       },             // Just return the ageRangeIndex from 0-3 inclusive if that is easier
-      body: JSON.stringify({ gender: 'PlaceHolder', ageIndex: 'PlaceHolder', county: 'PlaceHolder'}),
+      body: JSON.stringify({ gender: gender, ageIndex: ageIndex, county: county}),
     });
 
     onClose();
@@ -43,7 +50,7 @@ function DropdownMenu({ onClose }) {
 
   return (
     <div className="dropdown">
-        <div className="menu">
+        <form onSubmit={handleSend} className="menu">
             <div className="menu-age">
                 <label htmlFor="age" className="item-label">Select Age Range</label>
                 <AgeSlider id="age"/>
@@ -56,8 +63,8 @@ function DropdownMenu({ onClose }) {
                 <label htmlFor="country" className="item-label">Select a Region</label>
                 <Select id="country"/>
             </div>   
-            <button className="menu-button" onClick={handleSend}>Save</button>
-        </div>
+            <button type="submit" className="menu-button">Save</button>
+        </form>
     </div>
   );
 }

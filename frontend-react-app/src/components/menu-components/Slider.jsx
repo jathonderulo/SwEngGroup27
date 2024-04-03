@@ -14,7 +14,6 @@ function AgeSlider() {
 
   const handleSliderChange = (value) => {
       setAgeRangeIndex(value);
-      console.log(ageRangeMap[value].min, ageRangeMap[value].max);
   };
   
     return (
@@ -30,6 +29,12 @@ function AgeSlider() {
           thumbClassName="thumb"
           trackClassName="track"
           
+        />
+        {/* Hidden input to hold the age range index for form submission */}
+        <input 
+          type="hidden" 
+          name="ageRangeIndex" 
+          value={ageRangeIndex} 
         />
         <div className='labels'>
           <div className="mark-label">18-22</div>
