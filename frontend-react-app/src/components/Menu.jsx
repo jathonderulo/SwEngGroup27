@@ -26,8 +26,19 @@ function Menu() {
 function DropdownMenu({ onClose }) {
 
   const handleSend = async () => {
-    onClose();
+    // POST request to send persona info to the backend, where it is is parsed into indexes
+    // for selecting the correct fileID from a 3D array.
+    // Check console logs in backend terminal to see what values are received on the backend from
+    // this request
+    fetch('http://localhost:3001/persona-data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },             // Just return the ageRangeIndex from 0-3 inclusive if that is easier
+      body: JSON.stringify({ gender: 'PlaceHolder', ageIndex: 'PlaceHolder', county: 'PlaceHolder'}),
+    });
 
+    onClose();
   };
 
   return (
@@ -49,7 +60,6 @@ function DropdownMenu({ onClose }) {
         </div>
     </div>
   );
-
 }
 
 export default Menu;
