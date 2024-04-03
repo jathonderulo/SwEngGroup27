@@ -1,0 +1,14 @@
+.persona-details-container {
+    margin: 20px;
+  }
+  
+  .input-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .selected-data {
+    margin-top: 20px;
+  }
+  
