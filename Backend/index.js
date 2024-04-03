@@ -69,6 +69,25 @@ app.post('/new-thread', async (req, res) => {
   }
 })
 
+
+let globalGender, globalAgeLow, globalAgeHigh, globalCounty;
+
+// This post request is used to store the persona data for the chat bot.
+// It gives the chat bot a persona that is more suited to the users
+// intrests.
+app.post('/persona-data', async (req, res) => {
+  try{
+    const {gender, ageLow, ageHigh, county} = req.body;
+    globalGender = gender;
+    globalAgeLow = ageLow;
+    globalAgeHigh = ageHigh;
+    globalCounty = county;
+    return;
+  } catch (error) {
+    console.error('Error: ', error);
+  }
+});
+
 // This endpoint handles all chat interaction with the Assistant. 
 //   text: stores the message currently being passed to the Assistant
 //   threadID: the unique identifier that seperates user conversations
