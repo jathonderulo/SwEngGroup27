@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import AgeSlider from './AgeSlider';
 import Select from './Select';
 import GenderSelection from './GenderSelection';
-import './PersonaDetails.css';
 
 function PersonaDetails() {
   const [selectedCounty, setSelectedCounty] = useState('');
@@ -22,14 +21,17 @@ function PersonaDetails() {
   };
 
   return (
-    <div className="persona-details-container">
-      <h2>Persona Details</h2>
-      <div className="input-container">
+    <div style={{ position: 'fixed', bottom: '0', right: '0', padding: '20px' }}>
+      <div style={{ marginBottom: '20px' }}>
         <AgeSlider onChange={handleAgeChange} />
+      </div>
+      <div style={{ marginBottom: '20px' }}>
         <Select onChange={handleCountyChange} />
+      </div>
+      <div>
         <GenderSelection onChange={handleGenderChange} />
       </div>
-      <div className="selected-data">
+      <div style={{ position: 'fixed', bottom: '0', left: '0', padding: '20px', backgroundColor: '#f0f0f0' }}>
         <p>Selected Age Range: {ageRange[0]} - {ageRange[1]}</p>
         <p>Selected County: {selectedCounty}</p>
         <p>Selected Gender: {gender}</p>
