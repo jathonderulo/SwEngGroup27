@@ -3,7 +3,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const OpenAI = require('openai');
 
-//const { OPENAI_API_KEY } = require('./config');
 require('dotenv').config();
 
 const corsOptions = {
@@ -17,7 +16,6 @@ app.use(cors(corsOptions)); // Necessary to allow streaming
 const port = 3001;
 
 const openai = new OpenAI({
-  //apiKey: OPENAI_API_KEY,
   apiKey: process.env.OPENAI_API_KEY,
 });
 
@@ -77,7 +75,7 @@ app.post('/new-thread', async (req, res) => {
 //   return: Nothing directly. All response is returned through the "res" stream
 app.post('/chat', async (req, res) => {
   try {
-    var resolvePostRequest = false;
+    var responseCount = 0;
     const { message, threadID } = req.body;  
     
     // Add the user's message onto the current thread.
@@ -92,20 +90,20 @@ app.post('/chat', async (req, res) => {
     })
     .on('textCreated', (text) => {
       process.stdout.write('\nAssistant > ');
-      // res.write(`data: ${'...'}\n\n`); //Necessary for bubble creation
+      if(responseCount++ <= 0) {    // Closes response, but stream stays open, which turns off dots
+        res.send()         
+      } else {                      // Carriage returns seperate new responses in the same bubble
+        StreamManager.sendMessage({ status: 'open', type: 'textDelta', value: "\n\n" });
+      }
     })
     .on('textDelta', (textDelta, snapshot) => {
       process.stdout.write(textDelta.value)
       // Format message in SSE format and send to client
       StreamManager.sendMessage({ status: 'open', type: 'textDelta', value: textDelta.value });
-      if(resolvePostRequest==false){
-        res.send()                          // Without this response will reach failure at 5 requests
-        resolvePostRequest =true;
-      }
     })
 
     // When a new tool call is started by the Assistant, print "Assistant > toolCall.type" to the console
-    .on('toolCallCreated', (toolCall) => process.stdout.write(`\nSssistant > ${toolCall.type}\n\n`))
+    .on('toolCallCreated', (toolCall) => process.stdout.write(`\nAssistant > ${toolCall.type}\n\n`))
 
     // When a new chunk of response from the tool call becomes available, handle it as below
     .on('toolCallDelta', (toolCallDelta, snapshot) => {

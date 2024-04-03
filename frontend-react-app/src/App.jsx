@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ChatWindow from "./components/ChatWindow.jsx";
 import ChatInput from "./components/ChatInput.jsx";
 import AiAvatar from "./components/AiAvatar.jsx";
+import Menu from "./components/Menu.jsx";
 import "./styles/index.css";
 import "./styles/background.css";  
 
@@ -9,6 +10,7 @@ import "./styles/background.css";
 const InputOutputBox = () => {
   const [messages, setMessages] = useState([]);
   const [threadID, setThreadID] = useState(null);
+  // State to control the loading indicator visibility. Initially, no loading is happening
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -37,18 +39,12 @@ const InputOutputBox = () => {
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      // If it's the start of a new message, reset the current response
-      if (data.type === 'textDelta' && data.value.startsWith('...')) { // Assuming '...' denotes the start of a response
-        setMessages((prevMessages) => [...prevMessages, { text: '', sender: "ai" }]);
-      }
-  
-      // If it's part of an ongoing message, append it
       setMessages((prevMessages) => {
         const newMessages = [...prevMessages];
         const lastMessage = newMessages[newMessages.length - 1];
 
         if (lastMessage && lastMessage.sender === 'ai') {
-          if(data.status == 'open') {   // This status is used to prevent mysterious repeated chunks
+          if(data.status === 'open') {
             lastMessage.text += data.value;
             data.status = 'closed';
           }
@@ -58,10 +54,10 @@ const InputOutputBox = () => {
         return newMessages;
       });
     };
-    
     eventSource.onerror = (error) => {
       console.error('EventSource error:', error);
-      return () => eventSource.close();
+      setIsLoading(false); // Turns off loading indicator in case of an error
+      eventSource.close();
     };
     return () => eventSource.close();
   }, []);
@@ -73,7 +69,7 @@ const InputOutputBox = () => {
       sender: "user"
     };
     setMessages((prevMessages) => [...prevMessages, newUserMessage]);
-    setIsLoading(false);
+    setIsLoading(true);  // Turns on the loading dots when a new message is submitted
 
     if (!threadID) {
       console.error("ThreadID is not initialized yet.");
@@ -81,6 +77,7 @@ const InputOutputBox = () => {
       return;
     }
 
+    // Send the user message to the server using a POST request
     fetch('http://localhost:3001/chat', {
       method: 'POST',
       headers: {
@@ -88,6 +85,7 @@ const InputOutputBox = () => {
       },
       body: JSON.stringify({ message: newUserMessage.text, threadID }),
     })
+    .then(response => setIsLoading(false))
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -99,13 +97,13 @@ const InputOutputBox = () => {
     });
 };
 
-
   return (
   <body>
     <div className="main-container"></div>
       <div className="container-page">
         <ChatWindow messages={messages} isLoading={isLoading}/>
         <AiAvatar />
+        <Menu/>
       </div>
       <ChatInput onSubmit={handleMessageSubmit} />
   </body>
