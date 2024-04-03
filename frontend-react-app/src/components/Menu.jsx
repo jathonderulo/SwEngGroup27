@@ -41,7 +41,7 @@ function DropdownMenu({ onClose }) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-      },             // Just return the ageRangeIndex from 0-3 inclusive if that is easier
+      },
       body: JSON.stringify({ gender: gender, ageIndex: ageIndex, county: county}),
     });
 

@@ -11,9 +11,12 @@ const openai = new OpenAI({
 // as some of these functions can be damaging if run accidentally.
 // Uncomment function calls to use them.
 async function main() {
+  createFile("./data-sets/18MM");
+
+
   // listAllAssistants();
   // listFiles();
-  logRecentAssistant();
+  // logRecentAssistant();
   // deleteAssistant('asst_LjdET6jzjySOjOpotRKM2GTl');
   // deleteFile('asst_LjdET6jzjySOjOpotRKM2GTl', 'file-XUogDDfyoZBhMcme7RgxqUoq');
 
@@ -84,7 +87,7 @@ async function createFile(path) {
     file: fs.createReadStream(path),              // The file found at the path String parameter
     purpose: 'assistants',                        // Purpose is either 'fine-tuning' or 'assistants'
   });
-  console.log(file);                              // Log the file information
+  console.log(file.id);                              // Log the file information
   return file.id;                                 // the file id is returned
 }
 

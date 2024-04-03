@@ -54,12 +54,12 @@ app.get('/stream', (req, res) => {
 app.use(bodyParser.json());
 app.use(cors());
 
-// Assign the ID of the target assistant. This is a hard coded global variable.
+// Assign the ID of the target assistant.
 // Assistants can be created, deleted etc. from the assistant-editor.js file.
-const assistantID = 'asst_oANbAY9nu3G4i5ySHABCLUIB';
+let relevantAssistantID = process.env.DFLT_ASSISTANT_ID;
 // Variable fileID which will be passed to the assistant along with each message,
 // with instructions to only use this particular file. This will control persona.
-let relevantFileID = 'file-Ddm1FEAfCaxP9ZpjmRd8l1W6';
+let relevantFileID = process.env.DFLT_FILE_ID;
 
 // This post request is used to create a new thread. It is called
 // whenever a new instance of the frontend is created, so that each
@@ -82,18 +82,38 @@ app.post('/persona-data', async (req, res) => {
     console.log("Gender: "+gender+", ageIndex: "+ageIndex+", County: "+county+"\n");
     let i,j,k = 0;
 
-    if(ageIndex <= 3 && ageIndex >= 0) {
-      i = ageIndex;
-    } else {
-      return;
+    switch(ageIndex) {
+      case 0:
+        i = ageIndex;
+        relevantAssistantID = process.env.ASSISTANT_ID_18_22;
+        break;
+      case 1:
+        i = ageIndex;
+        relevantAssistantID = process.env.ASSISTANT_ID_23_35;
+        break;
+      case 2:
+        i = ageIndex;
+        relevantAssistantID = process.env.ASSISTANT_ID_36_53;
+        break;
+      case 3:
+        i = ageIndex;
+        relevantAssistantID = process.env.ASSISTANT_ID_56_65;
+        break;
+      default:
+        i = -1;
+        break;
     }
 
-    if(gender === 'male') {
-      j = 0;
-    } else if(gender === 'female') {
-      j = 1;
-    } else {
-      return;
+    switch(gender) {
+      case 'male':
+        j = 0;
+        break;
+      case 'female':
+        k = 1;
+        break;
+      default:
+        j = -1;
+        break;
     }
 
     switch(county) {
@@ -113,15 +133,22 @@ app.post('/persona-data', async (req, res) => {
         k = 4;
         break;
       default:
+        k = -1;
         return;
     }
 
-    relevantFileID = FILE_ID_STORE.data[i][j][k];
-    console.log(relevantFileID);
+    if(i != -1 && j != -1 && k != -1) {
+      relevantFileID = FILE_ID_STORE.data[i][j][k];
+    } else {
+      relevantFileID = process.env.DFLT_FILE_ID;
+      relevantAssistantID = process.env.DFLT_ASSISTANT_ID;
+    }
+    console.log("i = "+i+", j = "+j+", k = "+k+",\nFileID = "+relevantFileID+",\nAssistantID = "+relevantAssistantID+"\n");
     res.send();
     return;
   } catch (error) {
-    console.error('Error: ', error);
+    relevantFileID = process.env.DFLT_FILE_ID;
+    console.error('An error occurred while handling the persona data: ', error);
   }
 });
 
@@ -137,7 +164,8 @@ app.post('/chat', async (req, res) => {
     // Add the user's message onto the current thread.
     const openAiMessage = await openai.beta.threads.messages.create(threadID, {
       role: "user",
-      content: message
+      content: message,
+      file_ids: [relevantFileID]
     });
     
     // Run the specified thread on the Assistant, using streaming.
