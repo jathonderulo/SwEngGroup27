@@ -51,17 +51,14 @@ const InputOutputBox = () => {
         } else {
           newMessages.push({ text: data.value, sender: "ai" });
         }
-
         return newMessages;
       });
     };
-
     eventSource.onerror = (error) => {
       console.error('EventSource error:', error);
       setIsLoading(false); // Turns off loading indicator in case of an error
       eventSource.close();
     };
-
     return () => eventSource.close();
   }, []);
   
@@ -94,11 +91,11 @@ const InputOutputBox = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
     })
-    .catch (error => {
+    .catch(error => {
       console.error('Error sending message:', error);
       setIsLoading(false);
     });
-  };
+};
 
   return (
   <body>

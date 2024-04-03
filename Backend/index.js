@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const OpenAI = require('openai');
 
-const { OPENAI_API_KEY } = require('./config');
+require('dotenv').config();
 
 const corsOptions = {
   origin: 'http://localhost:5173', // or use '*' to allow any origin
@@ -16,7 +16,7 @@ app.use(cors(corsOptions)); // Necessary to allow streaming
 const port = 3001;
 
 const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 const StreamManager = {
@@ -119,7 +119,7 @@ app.post('/chat', async (req, res) => {
       }
     });
 
-    return;                                                           // Return from the function
+    return ;                                                           // Return from the function
   } catch (error) {
     console.error('Error processing chat message:', error);           // Catch and log any errors
     res.status(500).json({ error: error.message });                   // Send JSON error status back to frontend
@@ -127,6 +127,10 @@ app.post('/chat', async (req, res) => {
 });
 
 // Start the server on the specified port
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server is running on port ${port}`);                   // Log message stating the port number
+
 });
+
+// necessary for the unit tests
+module.exports = {app, assistantID, server, port};
