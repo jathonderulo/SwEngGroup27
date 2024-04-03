@@ -38,12 +38,6 @@ const InputOutputBox = () => {
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      // Logic handling incoming messages. If isLoading is true, it's set to false, indicating loading has finished.
-      // NB This code currently causes missing output chunks sometimes
-      if(isLoading) {
-        setIsLoading(false);
-      }
-
       setMessages((prevMessages) => {
         const newMessages = [...prevMessages];
         const lastMessage = newMessages[newMessages.length - 1];
@@ -68,7 +62,7 @@ const InputOutputBox = () => {
     };
 
     return () => eventSource.close();
-  }, [isLoading]);
+  }, []);
   
 
   const handleMessageSubmit = (newMessageText) => {
@@ -93,6 +87,7 @@ const InputOutputBox = () => {
       },
       body: JSON.stringify({ message: newUserMessage.text, threadID }),
     })
+    .then(response => setIsLoading(false))
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

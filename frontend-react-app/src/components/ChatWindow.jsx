@@ -5,7 +5,7 @@ export default function ChatWindow({ messages, isLoading }) {
   const windowEnd = useRef(null);
   const [loadingText, setLoadingText] = useState(""); // Initializing without dots
 
-    useEffect(() => {
+  useEffect(() => {
       // Updates loadingText with 1 to 3 dots
     const updateLoadingDots = () => {
       setLoadingText((currentText) => {
