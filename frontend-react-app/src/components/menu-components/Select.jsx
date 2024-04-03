@@ -2,35 +2,14 @@ import { useState} from 'react';
 import '../../styles/Select.css';
 
 function Select(){
-    const [countries, setCountries] = useState('');
+    const [countries, setCountries] = useState('D');
 
     const irishCounties = [
-      { label: 'Carlow', value: 'CW' },
-      { label: 'Cavan', value: 'CN' },
-      { label: 'Clare', value: 'CE' },
-      { label: 'Cork', value: 'CO' },
-      { label: 'Donegal', value: 'DL' },
-      { label: 'Dublin', value: 'D' },
-      { label: 'Galway', value: 'G' },
-      { label: 'Kerry', value: 'KY' },
-      { label: 'Kildare', value: 'KE' },
-      { label: 'Kilkenny', value: 'KK' },
-      { label: 'Laois', value: 'LS' },
-      { label: 'Leitrim', value: 'LM' },
-      { label: 'Limerick', value: 'LK' },
-      { label: 'Longford', value: 'LD' },
-      { label: 'Louth', value: 'LH' },
-      { label: 'Mayo', value: 'MO' },
-      { label: 'Meath', value: 'MH' },
-      { label: 'Monaghan', value: 'MN' },
-      { label: 'Offaly', value: 'OY' },
-      { label: 'Roscommon', value: 'RN' },
-      { label: 'Sligo', value: 'SO' },
-      { label: 'Tipperary', value: 'TA' },
-      { label: 'Waterford', value: 'WD' },
-      { label: 'Westmeath', value: 'WH' },
-      { label: 'Wexford', value: 'WX' },
-      { label: 'Wicklow', value: 'WW' }
+      { label: 'Dublin', value: 'D'},
+      { label: 'Leinster', value: 'L'},
+      { label: 'Munster', value: 'M'},
+      { label: 'Connacht', value: 'C'},
+      { label: 'Ulster (ROI Only)', value: 'U'}
   ];
 
       

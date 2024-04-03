@@ -12,8 +12,10 @@ const openai = new OpenAI({
 // Uncomment function calls to use them.
 async function main() {
   // listAllAssistants();
-  listFiles();
-  // logRecentAssistant();
+  // listFiles();
+  logRecentAssistant();
+  // deleteAssistant('asst_LjdET6jzjySOjOpotRKM2GTl');
+  // deleteFile('asst_LjdET6jzjySOjOpotRKM2GTl', 'file-XUogDDfyoZBhMcme7RgxqUoq');
 
   // Uncomment the function below to create a new Assistant. Pass three params:
   //   - assistantName
@@ -104,6 +106,13 @@ async function listFiles() {
 async function deleteAssistant(assistantID) {
   await openai.beta.assistants.del(assistantID);  // Delete assistant with the passed ID parameter
   console.log("Deleted "+assistantID);            // Log the deletion
+}
+
+async function deleteFile(assistantID, fileID) {
+  await openai.beta.assistants.files.del(assistantID, fileID);
+  console.log("Deleted "+fileID+" from "+assistantID);
+  await openai.files.del(fileID);
+  console.log("Deleted "+fileID);
 }
 
 main();

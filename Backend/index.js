@@ -4,6 +4,8 @@ const cors = require('cors');
 const OpenAI = require('openai');
 
 require('dotenv').config();
+const FILE_ID_STORE = require('./file-id-array');
+// console.log(FILE_ID_STORE.data[0][0][2]);
 
 const corsOptions = {
   origin: 'http://localhost:5173', // or use '*' to allow any origin
@@ -56,6 +58,7 @@ app.use(cors());
 // Assign the ID of the target assistant. This is a hard coded global variable.
 // Assistants can be created, deleted etc. from the assistant-editor.js file.
 const assistantID = 'asst_oANbAY9nu3G4i5ySHABCLUIB';
+const relevantFileID = 'file-Ddm1FEAfCaxP9ZpjmRd8l1W6';
 
 // This post request is used to create a new thread. It is called
 // whenever a new instance of the frontend is created, so that each
@@ -69,7 +72,6 @@ app.post('/new-thread', async (req, res) => {
   }
 })
 
-
 let globalGender, globalAgeLow, globalAgeHigh, globalCounty;
 
 // This post request is used to store the persona data for the chat bot.
@@ -82,6 +84,7 @@ app.post('/persona-data', async (req, res) => {
     globalAgeLow = ageLow;
     globalAgeHigh = ageHigh;
     globalCounty = county;
+    res.send();
     return;
   } catch (error) {
     console.error('Error: ', error);

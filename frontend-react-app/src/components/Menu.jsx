@@ -42,7 +42,7 @@ function DropdownMenu({ onClose }) {
                 <GenderSelection id="gender"/>
             </div>   
             <div className="menu-nationality">
-                <label htmlFor="country" className="item-label">Select a County</label>
+                <label htmlFor="country" className="item-label">Select a Region</label>
                 <Select id="country"/>
             </div>   
             <button className="menu-button" onClick={handleSend}>Save</button>
