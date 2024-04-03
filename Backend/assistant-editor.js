@@ -11,14 +11,31 @@ const openai = new OpenAI({
 // as some of these functions can be damaging if run accidentally.
 // Uncomment function calls to use them.
 async function main() {
-  createFile("./data-sets/18MM");
-
-
-  // listAllAssistants();
-  // listFiles();
   // logRecentAssistant();
-  // deleteAssistant('asst_LjdET6jzjySOjOpotRKM2GTl');
-  // deleteFile('asst_LjdET6jzjySOjOpotRKM2GTl', 'file-XUogDDfyoZBhMcme7RgxqUoq');
+
+  // const myUpdatedAssistant = await openai.beta.assistants.update(
+  //   'asst_oANbAY9nu3G4i5ySHABCLUIB',
+  //   {
+  //     instructions:
+  //     "You are an assistant that answers questions people ask about a full survey response dataset."
+  //      + " The survey results are contained in a .json list, which you have access to. The ID of this file"
+  //      + " will be contained in the beginning of every message. Please respond withv'Sorry I cannot do that"
+  //      + " for you' to any questions that are completely unrelated to the survey.",
+  //   }
+  // );
+
+  // console.log(myUpdatedAssistant);
+
+
+  // createAssistant("Survey Assistant for 56-65 datasets",
+  // "You are an assistant that answers questions people ask surrounding the results to a survey."
+  //  + " The survey results are contained in a .json file, which you have access to. Please respond 'Sorry I cannot do that for you' to"
+  //  + " any questions that are unrelated to the survey data."
+  // );
+
+  // uploadFile('asst_P7qpUcXUhoPGn78AWkSeMwUX', "file-iO1uaKiGDFibbov9wF1Zk8ow");
+
+  // deleteFile('', "file-Z7OlgvKzYp3W8fo3ISTCGLOz");
 
   // Uncomment the function below to create a new Assistant. Pass three params:
   //   - assistantName
@@ -30,6 +47,11 @@ async function main() {
   //  + " The survey results are contained in a .json file, which you have access to. Please respond 'Sorry I cannot do that for you' to"
   //  + " any questions that are unrelated to the survey data.",
   //  "./data-sets/survey-answers-all.json");
+}
+
+// Modify / Update an assistant's attributes
+async function modifyAssistant(assistantID) {
+  
 }
 
 // This function creates a thread and logs its ID
@@ -75,7 +97,7 @@ async function createAssistant(name, instructions) {
     model: "gpt-4-turbo-preview",                 // OpenAI model the assistant is based on
   });
 
-  console.log(myAssistant);                       // Log the assistant information
+  console.log(myAssistant.id);                       // Log the assistant information
   return myAssistant.id;                          // returns the assistants id
 }
 
@@ -112,8 +134,8 @@ async function deleteAssistant(assistantID) {
 }
 
 async function deleteFile(assistantID, fileID) {
-  await openai.beta.assistants.files.del(assistantID, fileID);
-  console.log("Deleted "+fileID+" from "+assistantID);
+  // await openai.beta.assistants.files.del(assistantID, fileID);
+  // console.log("Deleted "+fileID+" from "+assistantID);
   await openai.files.del(fileID);
   console.log("Deleted "+fileID);
 }

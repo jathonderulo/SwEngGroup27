@@ -4,7 +4,8 @@ const cors = require('cors');
 const OpenAI = require('openai');
 
 require('dotenv').config();
-const FILE_ID_STORE = require('./file-id-array');
+const FILE_ID_STORE = require('./file-id-array.js');
+const CONSTANTS = require('./constants.js');
 
 const corsOptions = {
   origin: 'http://localhost:5173', // or use '*' to allow any origin
@@ -56,10 +57,11 @@ app.use(cors());
 
 // Assign the ID of the target assistant.
 // Assistants can be created, deleted etc. from the assistant-editor.js file.
-let relevantAssistantID = process.env.DFLT_ASSISTANT_ID;
+let relevantAssistantID = CONSTANTS.DFLT_ASSISTANT_ID;
 // Variable fileID which will be passed to the assistant along with each message,
 // with instructions to only use this particular file. This will control persona.
-let relevantFileID = process.env.DFLT_FILE_ID;
+let relevantFileID = CONSTANTS.DFLT_FILE_ID;
+let relevantFileResponses = CONSTANTS.SURVEY_SIZE;
 
 // This post request is used to create a new thread. It is called
 // whenever a new instance of the frontend is created, so that each
@@ -83,21 +85,21 @@ app.post('/persona-data', async (req, res) => {
     let i,j,k = 0;
 
     switch(ageIndex) {
-      case 0:
+      case '0':
         i = ageIndex;
-        relevantAssistantID = process.env.ASSISTANT_ID_18_22;
+        relevantAssistantID = CONSTANTS.ASSISTANT_ID_18_22;
         break;
-      case 1:
+      case '1':
         i = ageIndex;
-        relevantAssistantID = process.env.ASSISTANT_ID_23_35;
+        relevantAssistantID = CONSTANTS.ASSISTANT_ID_23_35;
         break;
-      case 2:
+      case '2':
         i = ageIndex;
-        relevantAssistantID = process.env.ASSISTANT_ID_36_53;
+        relevantAssistantID = CONSTANTS.ASSISTANT_ID_36_53;
         break;
-      case 3:
+      case '3':
         i = ageIndex;
-        relevantAssistantID = process.env.ASSISTANT_ID_56_65;
+        relevantAssistantID = CONSTANTS.ASSISTANT_ID_56_65;
         break;
       default:
         i = -1;
@@ -109,7 +111,7 @@ app.post('/persona-data', async (req, res) => {
         j = 0;
         break;
       case 'female':
-        k = 1;
+        j = 1;
         break;
       default:
         j = -1;
@@ -132,22 +134,26 @@ app.post('/persona-data', async (req, res) => {
       case 'U':
         k = 4;
         break;
+      case 'A':
+        k = 5;
+        break;
       default:
         k = -1;
         return;
     }
 
     if(i != -1 && j != -1 && k != -1) {
-      relevantFileID = FILE_ID_STORE.data[i][j][k];
+      relevantFileID = FILE_ID_STORE.data[i][j][k][0];
+      relevantFileResonses = FILE_ID_STORE.data[i][j][k][1];
     } else {
-      relevantFileID = process.env.DFLT_FILE_ID;
-      relevantAssistantID = process.env.DFLT_ASSISTANT_ID;
+      relevantFileID = CONSTANTS.DFLT_FILE_ID;
+      relevantAssistantID = CONSTANTS.DFLT_ASSISTANT_ID;
     }
     console.log("i = "+i+", j = "+j+", k = "+k+",\nFileID = "+relevantFileID+",\nAssistantID = "+relevantAssistantID+"\n");
     res.send();
     return;
   } catch (error) {
-    relevantFileID = process.env.DFLT_FILE_ID;
+    relevantFileID = CONSTANTS.DFLT_FILE_ID;
     console.error('An error occurred while handling the persona data: ', error);
   }
 });
@@ -162,46 +168,51 @@ app.post('/chat', async (req, res) => {
     const { message, threadID } = req.body;  
     
     // Add the user's message onto the current thread.
-    const openAiMessage = await openai.beta.threads.messages.create(threadID, {
-      role: "user",
-      content: message,
-      file_ids: [relevantFileID]
-    });
-    
-    // Run the specified thread on the Assistant, using streaming.
-    const run = openai.beta.threads.runs.createAndStream(threadID, {
-      assistant_id: assistantID
-    })
-    .on('textCreated', (text) => {
-      process.stdout.write('\nAssistant > ');
-      if(responseCount++ <= 0) {    // Closes response, but stream stays open, which turns off dots
-        res.send()         
-      } else {                      // Carriage returns seperate new responses in the same bubble
-        StreamManager.sendMessage({ status: 'open', type: 'textDelta', value: "\n\n" });
-      }
-    })
-    .on('textDelta', (textDelta, snapshot) => {
-      process.stdout.write(textDelta.value)
-      // Format message in SSE format and send to client
-      StreamManager.sendMessage({ status: 'open', type: 'textDelta', value: textDelta.value });
-    })
-
-    // When a new tool call is started by the Assistant, print "Assistant > toolCall.type" to the console
-    .on('toolCallCreated', (toolCall) => process.stdout.write(`\nAssistant > ${toolCall.type}\n\n`))
-
-    // When a new chunk of response from the tool call becomes available, handle it as below
-    .on('toolCallDelta', (toolCallDelta, snapshot) => {
-      if (toolCallDelta.type === 'code_interpreter') {                // If the tool is code_interpreter
-        if (toolCallDelta.code_interpreter.outputs) {                 //   If chunk is an Assistant generated tool
-          process.stdout.write("\nTool output >\n");                  //   OUTPUT, console log it
-          toolCallDelta.code_interpreter.outputs.forEach(output => {  //   ForEach tool OUTPUT chunk
-            if (output.type === "logs") {                             //     If the output is a log
-              process.stdout.write(`\n${output.logs}\n`);             //       Write it to the console
-            }
-          });
+    if(relevantFileID != "no_data") {
+      const openAiMessage = await openai.beta.threads.messages.create(threadID, {
+        role: "user",
+        content: "Use the file with ID "+relevantFileID+" to respond to the following prompt: \n"+message,
+        // file_ids: [relevantFileID]
+      });
+      
+      // Run the specified thread on the Assistant, using streaming.
+      const run = openai.beta.threads.runs.createAndStream(threadID, {
+        assistant_id: relevantAssistantID
+      })
+      .on('textCreated', (text) => {
+        process.stdout.write('\nAssistant > ');
+        if(responseCount++ <= 0) {    // Closes response, but stream stays open, which turns off dots
+          res.send();        
+        } else {                      // Carriage returns seperate new responses in the same bubble
+          StreamManager.sendMessage({ status: 'open', type: 'textDelta', value: "\n\n" });
         }
-      }
-    });
+      })
+      .on('textDelta', (textDelta, snapshot) => {
+        process.stdout.write(textDelta.value)
+        // Format message in SSE format and send to client
+        StreamManager.sendMessage({ status: 'open', type: 'textDelta', value: textDelta.value });
+      })
+  
+      // When a new tool call is started by the Assistant, print "Assistant > toolCall.type" to the console
+      .on('toolCallCreated', (toolCall) => process.stdout.write(`\nAssistant > ${toolCall.type}\n\n`))
+  
+      // When a new chunk of response from the tool call becomes available, handle it as below
+      .on('toolCallDelta', (toolCallDelta, snapshot) => {
+        if (toolCallDelta.type === 'code_interpreter') {                // If the tool is code_interpreter
+          if (toolCallDelta.code_interpreter.outputs) {                 //   If chunk is an Assistant generated tool
+            process.stdout.write("\nTool output >\n");                  //   OUTPUT, console log it
+            toolCallDelta.code_interpreter.outputs.forEach(output => {  //   ForEach tool OUTPUT chunk
+              if (output.type === "logs") {                             //     If the output is a log
+                process.stdout.write(`\n${output.logs}\n`);             //       Write it to the console
+              }
+            });
+          }
+        }
+      });
+    } else {
+      res.send();
+      StreamManager.sendMessage({ status: 'open', type: 'textDelta', value: "Sorry, there is no data for your current selection." });
+    }
 
     return ;                                                           // Return from the function
   } catch (error) {
@@ -217,4 +228,4 @@ const server = app.listen(port, () => {
 });
 
 // necessary for the unit tests
-module.exports = {app, assistantID, server, port};
+module.exports = {app, relevantAssistantID, server, port};

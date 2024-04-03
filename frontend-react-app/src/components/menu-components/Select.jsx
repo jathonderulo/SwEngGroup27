@@ -2,9 +2,10 @@ import { useState} from 'react';
 import '../../styles/Select.css';
 
 function Select(){
-    const [counties, setCounties] = useState('D');
+    const [counties, setCounties] = useState('A');
 
     const irishCounties = [
+      { label: 'Any', value: 'A'},
       { label: 'Dublin', value: 'D'},
       { label: 'Leinster', value: 'L'},
       { label: 'Munster', value: 'M'},
