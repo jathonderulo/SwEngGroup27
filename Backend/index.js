@@ -150,7 +150,7 @@ app.post('/persona-data', async (req, res) => {
       relevantAssistantID = CONSTANTS.DFLT_ASSISTANT_ID;
     }
     console.log("i = "+i+", j = "+j+", k = "+k+",\nFileID = "+relevantFileID+",\nAssistantID = "+relevantAssistantID+"\n");
-    res.send();
+    res.send(relevantFileResponses);
     return;
   } catch (error) {
     relevantFileID = CONSTANTS.DFLT_FILE_ID;
@@ -214,7 +214,7 @@ app.post('/chat', async (req, res) => {
       StreamManager.sendMessage({ status: 'open', type: 'textDelta', value: "Sorry, there is no data for your current selection." });
     }
 
-    return ;                                                           // Return from the function
+    return;                                                           // Return from the function
   } catch (error) {
     console.error('Error processing chat message:', error);           // Catch and log any errors
     res.status(500).json({ error: error.message });                   // Send JSON error status back to frontend
