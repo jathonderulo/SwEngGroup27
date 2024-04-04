@@ -6,10 +6,3 @@
   align-items: center; /* Center children vertically */
 }
 
-.tshirt-image {
-  position: absolute; /* Position it over the avatar */
-  top: 54.5%;
-  width: 92%;
-  height: auto; /* Maintain aspect ratio */
-  z-index: 10; /* Ensure it's on top */
-}
