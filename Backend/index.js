@@ -221,6 +221,14 @@ app.post('/chat', async (req, res) => {
   }
 });
 
+// This endpoint resets the filters to their default values
+app.post('/reset-filters', (req, res) => {
+  relevantAssistantID = CONSTANTS.DFLT_ASSISTANT_ID;
+  relevantFileID = CONSTANTS.DFLT_FILE_ID;
+  relevantFileResponses = CONSTANTS.SURVEY_SIZE; // Reset this if it's supposed to be reset as well
+  res.json({ message: 'Filters reset to default.' });
+});
+
 // Start the server on the specified port
 const server = app.listen(port, () => {
   console.log(`Server is running on port ${port}`);                   // Log message stating the port number
