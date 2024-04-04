@@ -6,21 +6,12 @@ export default function ChatWindow({ messages, isLoading }) {
   const [loadingText, setLoadingText] = useState(""); // Initializing without dots
 
   useEffect(() => {
-      // Updates loadingText with 1 to 3 dots
-    const updateLoadingDots = () => {
-      setLoadingText((currentText) => {
-        const dotCount = currentText.length < 3 ? currentText.length + 1 : 1;
-        return '.'.repeat(dotCount);
-      });
-    };
+    const intervalId = setInterval(() => {
+      setLoadingText((prev) => prev.length < 3 ? prev + "." : ".");
+    }, 500);
 
-      // Set interval for dot animation
-    const intervalId = setInterval(updateLoadingDots, 500);
-
-      // Clear interval on unmount
     return () => clearInterval(intervalId);
   }, []);
-
 
   useEffect(() => {
     windowEnd.current?.scrollIntoView({ behavior: "smooth" });
