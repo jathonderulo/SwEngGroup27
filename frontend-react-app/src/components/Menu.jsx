@@ -48,6 +48,17 @@ function DropdownMenu({ onClose }) {
     onClose();
   };
 
+  const handleReset = async () => {
+      // Reset request to the backend
+      await fetch('http://localhost:3001/reset-filters', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+       });
+      onClose(); // Close the dropdown menu
+  };
+
   return (
     <div className="dropdown">
         <form onSubmit={handleSend} className="menu">
@@ -64,6 +75,7 @@ function DropdownMenu({ onClose }) {
                 <Select id="country"/>
             </div>   
             <button type="submit" className="menu-button">Save</button>
+            <button type="button" onClick={handleReset} className="menu-button">Reset Filters</button>
         </form>
     </div>
   );
