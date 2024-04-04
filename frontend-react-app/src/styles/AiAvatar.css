@@ -1,3 +1,15 @@
 .container-avatar {
-  flex-grow: 1;
+  position: relative; /* Make it the positioning context for the T-shirt */
+  flex-grow: 0.5;
+  display: flex; /* Ensure it uses flexbox */
+  justify-content: center; /* Center children horizontally */
+  align-items: center; /* Center children vertically */
+}
+
+.tshirt-image {
+  position: absolute; /* Position it over the avatar */
+  top: 54.5%;
+  width: 92%;
+  height: auto; /* Maintain aspect ratio */
+  z-index: 10; /* Ensure it's on top */
 }
