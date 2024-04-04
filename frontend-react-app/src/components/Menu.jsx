@@ -47,17 +47,16 @@ function DropdownMenu({ onClose }) {
 
         onClose();
     };
-
-    // triggered when the 'Reset Filters' button is clicked.
+    // Reset filter states to their default values and send a reset request to the backend
     const handleReset = async () => {
-        // Reset request to the backend
+        // Sends a POST request to the backend to reset the filters
         await fetch('http://localhost:3001/reset-filters', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
         });
-        onClose(); // Close the dropdown menu
+        onClose(); // Close the dropdown menu after reset
     };
 
     return (
@@ -76,7 +75,6 @@ function DropdownMenu({ onClose }) {
                     <Select id="country"/>
                 </div>
                 <button type="submit" className="menu-button">Save</button>
-                // This button triggers handleReset to reset the filters and close the dropdown.
                 <button type="button" onClick={handleReset} className="menu-button">Reset Filters</button>
             </form>
         </div>
