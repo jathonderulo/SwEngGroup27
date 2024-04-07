@@ -5,7 +5,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background-image: url('../pic1.jpeg'); 
+    background-image: url('../imgs/pic1.jpeg'); 
     background-size: cover;
     background-position: center;
     filter: blur(4px);
