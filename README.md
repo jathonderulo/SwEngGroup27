@@ -18,16 +18,16 @@ Our backend runs on NodeJS so here is a link to an official nodeJS installation 
 
 - [https://nodejs.org/en](https://nodejs.org/en/download/current)
 
-### Usage
+## Usage
 **`You must run the backend before the frontend and use 2 seperate terminals to be able to run the complete code`**
 
-## Backend: 
+### Backend: 
 Our backend runs on Node.js and uses the openAI api. Therefore to run you must install the following:
 1. `npm install openai axios body-parser cors express`
 2. `npm install dotenv`
 Then to run the server use: `node index.js`
 
-## Frontend:
+### Frontend:
 
 To run the code, in a terminal run:
 1. npm install avataaars --force
