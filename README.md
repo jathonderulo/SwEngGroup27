@@ -30,8 +30,8 @@ Then to run the server use: `node index.js`
 ### Frontend:
 
 To run the code, in a terminal run:
-1. npm install avataaars --force
-2. npm run dev
+1. `npm install avataaars --force`
+2. `npm run dev`
 Then click the link provided
 
 
