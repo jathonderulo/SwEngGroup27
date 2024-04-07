@@ -31,7 +31,6 @@ Then to run the server use: `node index.js`
 ```
   OPENAI_API_KEY: 'COPY_API_KEY_HERE'
 ```
-- API key can be found in our discord server
 
 ### Frontend:
 
