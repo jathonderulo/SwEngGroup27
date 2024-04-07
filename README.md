@@ -8,7 +8,6 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-
 Our frontend runs on ReactJS and Vite so there are two official plugins that are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
@@ -26,6 +25,13 @@ Our backend runs on Node.js and uses the openAI api. Therefore to run you must i
 1. `npm install openai axios body-parser cors express`
 2. `npm install dotenv`
 Then to run the server use: `node index.js`
+
+#### OPENAI API Key
+- As to not publish the API key online, please create `.env` in the Backend folder:
+```
+  OPENAI_API_KEY: 'COPY_API_KEY_HERE'
+```
+- API key can be found in our discord server
 
 ### Frontend:
 
