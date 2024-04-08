@@ -12,9 +12,9 @@ export default function AiAvatar({ gender, ageRange, country }) {
       />
       <img src={shirt} className="tshirt-image" alt="T-shirt" />
       <div className="text-overlay">
-        <p>Gender: {gender}</p>
-        <p>Age Range: {ageRange}</p>
-        <p>Country: {country}</p>
+        <p>I &lt;3 {country}</p>
+        <p>#{gender}</p>
+        <p>#{ageRange}yearsold</p>
       </div>
     </div>
   );

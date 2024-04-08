@@ -8,8 +8,20 @@
 
 .tshirt-image {
   position: absolute; /* Position it over the avatar */
-  top: 54.5%;
+  top: 54%;
   width: 92%;
   height: auto; /* Maintain aspect ratio */
   z-index: 10; /* Ensure it's on top */
+  right: 3.25%;
+}
+
+.text-overlay {
+  position: absolute;
+  top: 75%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0); /* Add a semi-transparent background */
+  padding: 10px; /* Adjust as needed */
+  z-index: 11;
 }
