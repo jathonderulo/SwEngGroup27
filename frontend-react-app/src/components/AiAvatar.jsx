@@ -4,6 +4,8 @@ import "../styles/AiAvatar.css";
 
 // Delay (in ms) between each animation frame
 const frameInterval = 1000 / 5;
+// Scalar for speech duration
+const speakDurationScalar = 0.3;
 
 export default function AiAvatar({
   messages,
@@ -18,7 +20,6 @@ export default function AiAvatar({
   eyebrowType = "",
   skinColor = "",
 }) {
-  // TODO Add more transition frames for smooth speach animation
   const speakFrames = ["Smile", "Default"];
 
   // Current number of animation frames remaining
@@ -30,8 +31,7 @@ export default function AiAvatar({
       const lastMessage = messages[messages.length - 1];
       if (lastMessage.sender == "System") {
         // Determine number of speach frames.
-        // TODO Replace placeholder calculation with calculated value based on duration of text to speach
-        setSpeakDuration(Math.trunc(lastMessage.text.length * 0.1));
+        setSpeakDuration(Math.trunc(lastMessage.text.length * speakDurationScalar));
 
         // Sequence animation frames
         const intervalId = setInterval(() => {
