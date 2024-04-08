@@ -1,9 +1,9 @@
 const OpenAI = require('openai');
-const { OPENAI_API_KEY } = require('./config');
+require('dotenv').config();
 const fs = require('fs');
 
 const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 // The main function is run upon execution of this program. Use this function
@@ -14,13 +14,20 @@ async function main() {
   // logRecentAssistant();
 
   // const myUpdatedAssistant = await openai.beta.assistants.update(
-  //   'asst_oANbAY9nu3G4i5ySHABCLUIB',
+  //   'asst_P7qpUcXUhoPGn78AWkSeMwUX',
   //   {
   //     instructions:
-  //     "You are an assistant that answers questions people ask about a full survey response dataset."
-  //      + " The survey results are contained in a .json list, which you have access to. The ID of this file"
-  //      + " will be contained in the beginning of every message. Please respond withv'Sorry I cannot do that"
-  //      + " for you' to any questions that are completely unrelated to the survey.",
+  //     "You are an assistant that answers questions people ask about refined sections of a large dataset of"
+  //     + " survey responses. The survey results are contained in .json lists, which you have access to. The"
+  //     + " ID of the only file that you should use will be contained in the beginning of every message. It is"
+  //     + " absolutely essential that you do not expect keys to be referenced directly in user prompts, instead"
+  //     + " you should always try to find the most relevant key from the data. Please always ensure the keys"
+  //     + " are valid before calling any tools, this is crucial to your functionality. If a result seems unlikely,"
+  //     + " immediately analyse it again and ensure that you used a valid key. If you are asked a personal question,"
+  //     + " then you must answer in the first person with the most common response to this question, as if you are"
+  //     + " actually a survey respondant. It is essential that responses to personal questions are in the first"
+  //     + " person. You should be acting as a respondant in these situations. Please respond with 'Sorry I"
+  //     + " cannot do that for you' to any questions that are completely unrelated to the survey data.",
   //   }
   // );
 
