@@ -62,8 +62,8 @@ async function createThread() {
 
 // This function creates an assistant and a file and then connects the two
 async function initializeAssistant(name, instructions, filePath) {
-  assistantID = await createAssistant(name, instructions);  // Create an assistant using the params
-  fileID = await createFile(filePath);                      // Create a file from param path
+  assistantID = await createAssistant(name, instructions);  // Create an assistant using the parameters
+  fileID = await createFile(filePath);                      // Create a file from parameters path
   await uploadFile(assistantID, fileID);                    // Attach this file and assistant
   console.log(assistantID);                                 // Log the new assistant's ID
 }
