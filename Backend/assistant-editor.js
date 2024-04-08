@@ -56,11 +56,6 @@ async function main() {
   //  "./data-sets/survey-answers-all.json");
 }
 
-// Modify / Update an assistant's attributes
-async function modifyAssistant(assistantID) {
-  
-}
-
 // This function creates a thread and logs its ID
 async function createThread() {
   const thread = await openai.beta.threads.create();        // Create a new thread
