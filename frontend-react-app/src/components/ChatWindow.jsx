@@ -1,33 +1,54 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "../styles/ChatWindow.css";
 
-
-export default function ChatWindow({ messages }) {
+export default function ChatWindow({ messages, isLoading }) {
   const windowEnd = useRef(null);
+  const [loadingText, setLoadingText] = useState(""); // Initializing without dots
 
-  /** Scroll to bottom on message submit */
+  useEffect(() => {
+      // Updates loadingText with 1 to 3 dots
+    const updateLoadingDots = () => {
+      setLoadingText((currentText) => {
+        const dotCount = currentText.length < 3 ? currentText.length + 1 : 1;
+        return '.'.repeat(dotCount);
+      });
+    };
+
+      // Set interval for dot animation
+    const intervalId = setInterval(updateLoadingDots, 500);
+
+      // Clear interval on unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
+
   useEffect(() => {
     windowEnd.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  /** Calculate the width of the chat message container */
-  function calcWidth(message) {
-    return message.text.length * 10;
+  function getMessageClasses(sender) {
+    let baseClasses = "container-message";
+    if (sender === "user") {
+      return `${baseClasses} user-message`; // Additional class for user messages
+    } else if (sender === "ai") {
+      return `${baseClasses} ai-message`; // Additional class for AI messages
+    }
+    return baseClasses; // Default class if sender is unknown
   }
 
   return (
-    <div className="container-chat">
-      {messages &&
-        messages.map((message) => (
-          <div
-            className="container-message"
-            key={message.id}
-            style={{ width: calcWidth(message) }}
-          >
-            <p>{message.text}</p>
-          </div>
+      <div className="container-chat">
+        {messages.map((message, index) => (
+            <div key={index} className={getMessageClasses(message.sender)}>
+              <p style={{ whiteSpace: "pre-line" }}>{message.text}</p>
+            </div>
         ))}
-      <div ref={windowEnd} />
-    </div>
+        {isLoading && (
+            <div className={getMessageClasses("ai") + " loading"}>
+              <p>{loadingText}</p>
+            </div>
+        )}
+        <div ref={windowEnd} />
+      </div>
   );
 }

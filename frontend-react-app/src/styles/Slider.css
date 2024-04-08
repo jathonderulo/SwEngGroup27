@@ -1,0 +1,55 @@
+:root {
+    --light-blue: rgb(61, 219, 219);
+    --pink: #E24ED2;
+    --black: #3A3A3A;
+    --text:rgb(236, 236, 236); 
+}
+
+.slider {
+  margin: 17px;
+  background-color: var(--text);
+  border-radius: 10px;
+  height: 5px;
+  position: relative;
+}
+
+
+.thumb {
+  background-color: var(--text);
+  border: 2px solid var(--black);
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  outline: none;
+}
+
+.thumb:hover,
+.thumb:active {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.track {
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: transparent;
+  position: absolute;
+  border-radius: 10px;
+  height: 5px;
+}
+
+.track-1{
+  background-color: var(--pink);
+}
+
+.age-display input {
+  border: 1px solid var(--black);
+  border-radius: 5px;
+  padding: 5px;
+  margin-top: 7px;
+  font-size: 1rem;
+}
