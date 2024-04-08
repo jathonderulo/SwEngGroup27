@@ -28,7 +28,7 @@ export default function AiAvatar({
   useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
-      if (lastMessage.sender == "System") {
+      if (lastMessage.sender == "ai") {
         // Determine number of speach frames.
         // TODO Replace placeholder calculation with calculated value based on duration of text to speach
         setSpeakDuration(Math.trunc(lastMessage.text.length * 0.1));
