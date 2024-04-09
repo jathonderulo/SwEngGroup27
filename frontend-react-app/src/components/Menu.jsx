@@ -32,7 +32,7 @@ function DropdownMenu({ setFileID, onClose, setAssistantID }) {
         // for selecting the correct fileID from a 3D array.
         // Check console logs in backend terminal to see what values are received on the backend from
         // this request
-        const response = await fetch('https://sweng27.csproject.org/persona-data', {
+        const response = await fetch('http://localhost:3001/persona-data', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ function DropdownMenu({ setFileID, onClose, setAssistantID }) {
     // Reset filter states to their default values and send a reset request to the backend
     const handleReset = async () => {
         // Sends a POST request to the backend to reset the filters
-        const response = await fetch('https://sweng27.csproject.org/reset-filters', {
+        const response = await fetch('http://localhost:3001/reset-filters', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
