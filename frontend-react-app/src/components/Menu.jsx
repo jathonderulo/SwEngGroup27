@@ -84,8 +84,7 @@ function DropdownMenu({ setFileID, onClose, setAssistantID }) {
                 <button type="button" onClick={handleReset} className="menu-button">Reset Filters</button>
             </form>
         </div>
-    </div>
-  );
+    );
 
 }
 export default Menu;
