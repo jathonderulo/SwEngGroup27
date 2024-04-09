@@ -14,17 +14,16 @@ function Menu({setAssistantID, setFileID}) {
     const [open, setOpen] = useState(false);
 
     const handleDropdown = () => setOpen(!open);
-
+  
     return (
         <div className="menu-container">
             <button className="sett-button" onClick={handleDropdown}>Settings <img src={settIcon} className="sett-icon"/></button>
             {open && <DropdownMenu setAssistantID={setAssistantID} setFileID={setFileID} onClose={handleDropdown} />}
         </div>
-    );
+  );
 }
 
 function DropdownMenu({ setFileID, onClose, setAssistantID }) {
-
     const handleSend = async (event) => {
         event.preventDefault(); // Prevent the form from causing a page reload
 
@@ -85,7 +84,8 @@ function DropdownMenu({ setFileID, onClose, setAssistantID }) {
                 <button type="button" onClick={handleReset} className="menu-button">Reset Filters</button>
             </form>
         </div>
-    );
-}
+    </div>
+  );
 
+}
 export default Menu;

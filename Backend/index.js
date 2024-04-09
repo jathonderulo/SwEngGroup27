@@ -4,8 +4,6 @@ const cors = require('cors');
 const OpenAI = require('openai');
 
 require('dotenv').config();
-const FILE_ID_STORE = require('./file-id-array.js');
-const CONSTANTS = require('./constants.js');
 
 const corsOptions = {
   origin: 'http://localhost:5173', // or use '*' to allow any origin
@@ -55,13 +53,10 @@ app.get('/stream', (req, res) => {
 app.use(bodyParser.json());
 app.use(cors());
 
-// Assign the ID of the target assistant.
+// Assign the ID of the target assistant. This is a hard coded global variable.
 // Assistants can be created, deleted etc. from the assistant-editor.js file.
-let relevantAssistantID = CONSTANTS.DFLT_ASSISTANT_ID;
-// Variable fileID which will be passed to the assistant along with each message,
-// with instructions to only use this particular file. This will control persona.
-let relevantFileID = CONSTANTS.DFLT_FILE_ID;
-let relevantFileResponses = CONSTANTS.SURVEY_SIZE;
+const assistantID = 'asst_oANbAY9nu3G4i5ySHABCLUIB';
+
 
 // This post request is used to create a new thread. It is called
 // whenever a new instance of the frontend is created, so that each
@@ -159,6 +154,7 @@ app.post('/persona-data', async (req, res) => {
   }
 });
 
+
 // This endpoint handles all chat interaction with the Assistant. 
 //   text: stores the message currently being passed to the Assistant
 //   threadID: the unique identifier that seperates user conversations
@@ -210,13 +206,11 @@ app.post('/chat', async (req, res) => {
             });
           }
         }
-      });
-    } else {
-      res.send();
-      StreamManager.sendMessage({ status: 'open', type: 'textDelta', value: "Sorry, there is no data for your current selection." });
-    }
+      }
+    });
 
-    return;                                                           // Return from the function
+    return ;                                                           // Return from the function
+
   } catch (error) {
     console.error('Error processing chat message:', error);           // Catch and log any errors
     res.status(500).json({ error: error.message });                   // Send JSON error status back to frontend
@@ -238,4 +232,5 @@ const server = app.listen(port, () => {
 });
 
 // necessary for the unit tests
-module.exports = {app, relevantAssistantID, server, port};
+module.exports = {app, assistantID, server, port};
+

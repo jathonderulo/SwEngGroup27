@@ -39,6 +39,7 @@ html::-webkit-scrollbar {
   background-color: #f0f0f0; /* Light grey background for AI messages */
   margin-left: 10px; /* Ensures consistent margin on the left */
   align-self: flex-start; /* Keeps AI messages aligned to the left */
+
 }
 
 .loading {
@@ -49,5 +50,3 @@ html::-webkit-scrollbar {
   text-align: left; /* Align text to the left, similar to AI messages */
   margin: 0 auto; /* Center the dots in the container if needed */
 }
-
-
