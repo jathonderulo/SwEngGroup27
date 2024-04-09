@@ -206,8 +206,8 @@ app.post('/chat', async (req, res) => {
             });
           }
         }
-      }
-    });
+      });
+    }
 
     return ;                                                           // Return from the function
 
@@ -233,4 +233,3 @@ const server = app.listen(port, () => {
 
 // necessary for the unit tests
 module.exports = {app, assistantID, server, port};
-
