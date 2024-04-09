@@ -39,7 +39,25 @@ html::-webkit-scrollbar {
   background-color: #f0f0f0; /* Light grey background for AI messages */
   margin-left: 10px; /* Ensures consistent margin on the left */
   align-self: flex-start; /* Keeps AI messages aligned to the left */
+
 }
+.container-chat::-webkit-scrollbar {
+  display: none !important;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+.container-message {
+  margin: 5px 10px; /* Adds margin around each message for spacing */
+  padding: 10px; /* Adds padding inside each message for content spacing */
+  border-radius: 10px; /* Rounds the corners of the message bubbles */
+  max-width: 80%; /* Limits the maximum width of a message */
+  
+}
+
+
 
 .loading {
   font: 24px;
@@ -49,5 +67,3 @@ html::-webkit-scrollbar {
   text-align: left; /* Align text to the left, similar to AI messages */
   margin: 0 auto; /* Center the dots in the container if needed */
 }
-
-
