@@ -4,6 +4,8 @@ const cors = require('cors');
 const OpenAI = require('openai');
 
 require('dotenv').config();
+const FILE_ID_STORE = require('./file-id-array.js');
+const CONSTANTS = require('./constants.js');
 
 const corsOptions = {
   origin: 'http://localhost:5173', // or use '*' to allow any origin
