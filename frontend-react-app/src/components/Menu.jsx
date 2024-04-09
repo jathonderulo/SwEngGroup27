@@ -60,7 +60,7 @@ function DropdownMenu({ setFileID, onClose, setAssistantID }) {
             },
         });
         const data = await response.json();
-        setAssistantID(data.assistacoolntID);      // Thes lines needs to call setAssistantID() in App.jsx,
+        setAssistantID(data.assistantID);      // Thes lines needs to call setAssistantID() in App.jsx,
         setFileID(data.fileID);                // but I don't know how to access that variable
 
         onClose(); // Close the dropdown menu after reset

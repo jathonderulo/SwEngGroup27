@@ -167,6 +167,7 @@ app.post('/chat', async (req, res) => {
   try {
     var responseCount = 0;
     const { message, threadID, assistantID, fileID } = req.body;  
+    console.log("Message: "+message+",\nThreadID: "+threadID+",\nAssistantID: "+assistantID+",\nFileID: "+fileID+"\n");
     
     // Add the user's message onto the current thread.
     if(fileID != "no_data") {
