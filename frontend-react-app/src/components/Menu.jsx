@@ -5,6 +5,7 @@ import settIcon from '../imgs/setting.png';
 import AgeSlider from "./menu-components/Slider";
 import GenderSelection from "./menu-components/Radio.jsx";
 import Select from "./menu-components/Select.jsx";
+import App from "../App.jsx";
 
 /* to do next:
 sending data
@@ -37,25 +38,32 @@ function DropdownMenu({ onClose }) {
         // for selecting the correct fileID from a 3D array.
         // Check console logs in backend terminal to see what values are received on the backend from
         // this request
-        fetch('http://localhost:3001/persona-data', {
+        const response = fetch('http://localhost:3001/persona-data', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ gender: gender, ageIndex: ageIndex, county: county}),
         });
+        const data = await response.json();
+        // setAssistantID(data.assistantID);      // Thes lines needs to call setAssistantID() in App.jsx,
+        // setFileID(data.fileID);                // but I don't know how to access that variable
 
         onClose();
     };
     // Reset filter states to their default values and send a reset request to the backend
     const handleReset = async () => {
         // Sends a POST request to the backend to reset the filters
-        await fetch('http://localhost:3001/reset-filters', {
+        const response = await fetch('http://localhost:3001/reset-filters', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
         });
+        const data = await response.json();
+        // setAssistantID(data.assistantID);      // Thes lines needs to call setAssistantID() in App.jsx,
+        // setFileID(data.fileID);                // but I don't know how to access that variable
+
         onClose(); // Close the dropdown menu after reset
     };
 

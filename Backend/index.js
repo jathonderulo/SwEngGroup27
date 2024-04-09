@@ -65,11 +65,12 @@ let relevantFileResponses = CONSTANTS.SURVEY_SIZE;
 
 // This post request is used to create a new thread. It is called
 // whenever a new instance of the frontend is created, so that each
-// user can add messages to their own personal thread.
+// user can add messages to their own personal thread. It also initialises
+// the frontend assistantID and fileID to default values.
 app.post('/new-thread', async (req, res) => {
   try {
     const thread = await openai.beta.threads.create();       // Create a new thread and store its ID
-    res.json({ threadID: thread.id });                       // Return the new thread's ID as JSON
+    res.json({ threadID: thread.id, assistantID: CONSTANTS.DFLT_ASSISTANT_ID, fileID: CONSTANTS.DFLT_FILE_ID });                       // Return the new thread's ID as JSON
   } catch (error) {
     console.error('Error: ', error);                         // Catch errors and print them to console
   }
@@ -144,13 +145,13 @@ app.post('/persona-data', async (req, res) => {
 
     if(i != -1 && j != -1 && k != -1) {
       relevantFileID = FILE_ID_STORE.data[i][j][k][0];
-      relevantFileResonses = FILE_ID_STORE.data[i][j][k][1];
+      relevantFileResponses = FILE_ID_STORE.data[i][j][k][1];
     } else {
       relevantFileID = CONSTANTS.DFLT_FILE_ID;
       relevantAssistantID = CONSTANTS.DFLT_ASSISTANT_ID;
     }
     console.log("i = "+i+", j = "+j+", k = "+k+",\nFileID = "+relevantFileID+",\nAssistantID = "+relevantAssistantID+"\n");
-    res.send(relevantFileResponses);
+    res.json({ assistantID: relevantAssistantID, fileID: relevantFileID });
     return;
   } catch (error) {
     relevantFileID = CONSTANTS.DFLT_FILE_ID;
@@ -165,19 +166,19 @@ app.post('/persona-data', async (req, res) => {
 app.post('/chat', async (req, res) => {
   try {
     var responseCount = 0;
-    const { message, threadID } = req.body;  
+    const { message, threadID, assistantID, fileID } = req.body;  
     
     // Add the user's message onto the current thread.
-    if(relevantFileID != "no_data") {
+    if(fileID != "no_data") {
       const openAiMessage = await openai.beta.threads.messages.create(threadID, {
         role: "user",
-        content: "Use the file with ID "+relevantFileID+" to respond to the following prompt: \n"+message,
+        content: "Use the file with ID "+fileID+" to respond to the following prompt: \n"+message,
         // file_ids: [relevantFileID]
       });
       
       // Run the specified thread on the Assistant, using streaming.
       const run = openai.beta.threads.runs.createAndStream(threadID, {
-        assistant_id: relevantAssistantID
+        assistant_id: assistantID
       })
       .on('textCreated', (text) => {
         process.stdout.write('\nAssistant > ');
@@ -226,7 +227,7 @@ app.post('/reset-filters', (req, res) => {
   relevantAssistantID = CONSTANTS.DFLT_ASSISTANT_ID;
   relevantFileID = CONSTANTS.DFLT_FILE_ID;
   relevantFileResponses = CONSTANTS.SURVEY_SIZE; // Reset this if it's supposed to be reset as well
-  res.json({ message: 'Filters reset to default.' });
+  res.json({ message: 'Filters reset to default.', assistantID: relevantAssistantID, fileID: relevantFileID });
 });
 
 // Start the server on the specified port
