@@ -10,6 +10,8 @@ import "./styles/background.css";
 const InputOutputBox = () => {
   const [messages, setMessages] = useState([]);
   const [threadID, setThreadID] = useState(null);
+  const [assistantID, setAssistantID] = useState(null);
+  const [fileID, setFileID] = useState(null);
   // State to control the loading indicator visibility. Initially, no loading is happening
   const [isLoading, setIsLoading] = useState(false);
 
@@ -24,7 +26,9 @@ const InputOutputBox = () => {
           },
         });
         const data = await response.json();
-        setThreadID(data.threadID); // Store the threadID from the response
+        setThreadID(data.threadID);           // Store the threadID from the response
+        setAssistantID(data.assistantID);
+        setFileID(data.fileID);
       } catch (error) {
         console.error('Error initializing new thread:', error);
       }
@@ -83,7 +87,7 @@ const InputOutputBox = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message: newUserMessage.text, threadID }),
+      body: JSON.stringify({ message: newUserMessage.text, threadID, assistantID, fileID }),
     })
     .then(response => setIsLoading(false))
     .then(response => {
@@ -104,9 +108,9 @@ const InputOutputBox = () => {
       <div className="main-container"></div>
         <div className="container-page">
         <ChatWindow messages={messages} isLoading={isLoading}/>
+        <AiAvatar />
+        <Menu setAssistantID={setAssistantID} setFileID={setFileID}/>
         <AiAvatar messages={messages}/>
-
-        <Menu/>
       </div>
       <ChatInput onSubmit={handleMessageSubmit} />
   </body>
