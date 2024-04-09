@@ -102,7 +102,7 @@ const InputOutputBox = () => {
     <div className="main-container"></div>
       <div className="container-page">
         <ChatWindow messages={messages} isLoading={isLoading}/>
-        <AiAvatar />
+        <AiAvatar gender = "female" ageRange="18-50" country = "Dublin"/>
         <Menu/>
       </div>
       <ChatInput onSubmit={handleMessageSubmit} />
