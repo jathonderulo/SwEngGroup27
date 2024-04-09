@@ -3,7 +3,6 @@ import '../../styles/Radio.css';
 
 function GenderSelection() {
     const [gender, setGender] = useState('');
-  
     const handleGenderChange = (event) => {
       setGender(event.target.value);
     };

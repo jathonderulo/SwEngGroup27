@@ -57,6 +57,7 @@ app.use(cors());
 // Assistants can be created, deleted etc. from the assistant-editor.js file.
 const assistantID = 'asst_oANbAY9nu3G4i5ySHABCLUIB';
 
+
 // This post request is used to create a new thread. It is called
 // whenever a new instance of the frontend is created, so that each
 // user can add messages to their own personal thread.
@@ -68,6 +69,7 @@ app.post('/new-thread', async (req, res) => {
     console.error('Error: ', error);                         // Catch errors and print them to console
   }
 })
+
 
 // This endpoint handles all chat interaction with the Assistant. 
 //   text: stores the message currently being passed to the Assistant
@@ -120,6 +122,7 @@ app.post('/chat', async (req, res) => {
     });
 
     return ;                                                           // Return from the function
+
   } catch (error) {
     console.error('Error processing chat message:', error);           // Catch and log any errors
     res.status(500).json({ error: error.message });                   // Send JSON error status back to frontend
@@ -134,3 +137,4 @@ const server = app.listen(port, () => {
 
 // necessary for the unit tests
 module.exports = {app, assistantID, server, port};
+

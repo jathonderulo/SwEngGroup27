@@ -18,6 +18,7 @@ function AgeSlider() {
       const newValue = Math.min(100, Math.max(parseInt(event.target.value, 10), ageRange[0]));
       setAgeRange([ageRange[0], newValue]);
     };
+
   
     return (
       <div className="age-slider-container">
@@ -48,6 +49,7 @@ function AgeSlider() {
             min={ageRange[0]}
             max={100}
           />
+
         </div>
       </div>
   );

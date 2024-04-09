@@ -105,10 +105,11 @@ const InputOutputBox = () => {
         <div className="container-page">
         <ChatWindow messages={messages} isLoading={isLoading}/>
         <AiAvatar messages={messages}/>
+
         <Menu/>
       </div>
-        <ChatInput onSubmit={handleMessageSubmit} />
-    </body>
+      <ChatInput onSubmit={handleMessageSubmit} />
+  </body>
   );
 };
 

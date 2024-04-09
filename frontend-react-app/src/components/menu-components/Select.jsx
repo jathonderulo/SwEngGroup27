@@ -2,6 +2,7 @@ import { useState} from 'react';
 import '../../styles/Select.css';
 
 function Select(){
+
     const [countries, setCountries] = useState('');
 
     const irishCounties = [
@@ -40,6 +41,7 @@ function Select(){
           className="selected-country" 
           value={countries} 
           onChange={(e) => setCountries(e.target.value)}
+
         >
           <option value=""></option>
           {irishCounties.map(county => (

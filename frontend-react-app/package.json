@@ -10,8 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+
     "@babel/runtime": "^7.24.4",
+
     "avataaars": "^2.0.0",
+    "axios": "^1.6.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-slider": "^2.0.6"
