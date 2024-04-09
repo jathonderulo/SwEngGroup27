@@ -3,51 +3,44 @@ import ReactSlider from 'react-slider';
 import '../../styles/Slider.css';
 
 function AgeSlider() {
-    const [ageRange, setAgeRange] = useState([18, 50]);
+  const ageRangeMap = [
+    { min: 18, max: 22 },
+    { min: 23, max: 35 },
+    { min: 36, max: 53 },
+    { min: 54, max: 65 }
+  ];
 
-    const handleSliderChange = (value) => {
-      setAgeRange(value);
-    };
-  
-    const handleMinInputChange = (event) => {
-      const newValue = Math.max(0, Math.min(parseInt(event.target.value, 10), ageRange[1]));
-      setAgeRange([newValue, ageRange[1]]);
-    };
-  
-    const handleMaxInputChange = (event) => {
-      const newValue = Math.min(100, Math.max(parseInt(event.target.value, 10), ageRange[0]));
-      setAgeRange([ageRange[0], newValue]);
-    };
+  const [ageRangeIndex, setAgeRangeIndex] = useState(0); 
+
+  const handleSliderChange = (value) => {
+      setAgeRangeIndex(value);
+  };
   
     return (
       <div className="age-slider-container">
         <ReactSlider
-          value={ageRange}
-          onChange={handleSliderChange}
           className="slider"
+          marks={ageRangeMap.map((_, index) => index)}
+          markClassName="mark"
+          min={0}
+          max={ageRangeMap.length -1}
+          value={ageRangeIndex}
+          onChange={handleSliderChange}
           thumbClassName="thumb"
           trackClassName="track"
-          withTracks
-          min={0}
-          max={100}
-          ariaLabel={['Lower thumb', 'Upper thumb']}
-          ariaValuetext={(state) => `Age range: ${state.value[0]} to ${state.value[1]}`}
+          
         />
-        <div className="age-display">
-          <input
-            type="number"
-            value={ageRange[0]}
-            onChange={handleMinInputChange}
-            min={0}
-            max={ageRange[1]} 
-          />
-          <input
-            type="number"
-            value={ageRange[1]}
-            onChange={handleMaxInputChange}
-            min={ageRange[0]}
-            max={100}
-          />
+        {/* Hidden input to hold the age range index for form submission */}
+        <input 
+          type="hidden" 
+          name="ageRangeIndex" 
+          value={ageRangeIndex} 
+        />
+        <div className='labels'>
+          <div className="mark-label">18-22</div>
+          <div className="mark-label">23-35</div>
+          <div className="mark-label">36-53</div>
+          <div className="mark-label">54-65</div> 
         </div>
       </div>
   );

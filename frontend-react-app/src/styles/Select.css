@@ -1,5 +1,5 @@
 
-.selected-country {
+.selected-county {
     width: 95%; 
     padding: 5px;
     border: 1px solid #ccc;
@@ -9,9 +9,3 @@
     margin-top: 8px;
     outline: none;
   }
-  
-  .loading {
-    font-size: 16px;
-    color: #666;
-  }
-  

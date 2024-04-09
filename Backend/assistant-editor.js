@@ -1,9 +1,9 @@
 const OpenAI = require('openai');
-const { OPENAI_API_KEY } = require('./config');
+require('dotenv').config();
 const fs = require('fs');
 
 const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 // The main function is run upon execution of this program. Use this function
@@ -11,9 +11,38 @@ const openai = new OpenAI({
 // as some of these functions can be damaging if run accidentally.
 // Uncomment function calls to use them.
 async function main() {
-  // listAllAssistants();
-  listFiles();
   // logRecentAssistant();
+
+  // const myUpdatedAssistant = await openai.beta.assistants.update(
+  //   'asst_P7qpUcXUhoPGn78AWkSeMwUX',
+  //   {
+  //     instructions:
+  //     "You are an assistant that answers questions people ask about refined sections of a large dataset of"
+  //     + " survey responses. The survey results are contained in .json lists, which you have access to. The"
+  //     + " ID of the only file that you should use will be contained in the beginning of every message. It is"
+  //     + " absolutely essential that you do not expect keys to be referenced directly in user prompts, instead"
+  //     + " you should always try to find the most relevant key from the data. Please always ensure the keys"
+  //     + " are valid before calling any tools, this is crucial to your functionality. If a result seems unlikely,"
+  //     + " immediately analyse it again and ensure that you used a valid key. If you are asked a personal question,"
+  //     + " then you must answer in the first person with the most common response to this question, as if you are"
+  //     + " actually a survey respondant. It is essential that responses to personal questions are in the first"
+  //     + " person. You should be acting as a respondant in these situations. Please respond with 'Sorry I"
+  //     + " cannot do that for you' to any questions that are completely unrelated to the survey data.",
+  //   }
+  // );
+
+  // console.log(myUpdatedAssistant);
+
+
+  // createAssistant("Survey Assistant for 56-65 datasets",
+  // "You are an assistant that answers questions people ask surrounding the results to a survey."
+  //  + " The survey results are contained in a .json file, which you have access to. Please respond 'Sorry I cannot do that for you' to"
+  //  + " any questions that are unrelated to the survey data."
+  // );
+
+  // uploadFile('asst_P7qpUcXUhoPGn78AWkSeMwUX', "file-iO1uaKiGDFibbov9wF1Zk8ow");
+
+  // deleteFile('', "file-Z7OlgvKzYp3W8fo3ISTCGLOz");
 
   // Uncomment the function below to create a new Assistant. Pass three params:
   //   - assistantName
@@ -35,8 +64,8 @@ async function createThread() {
 
 // This function creates an assistant and a file and then connects the two
 async function initializeAssistant(name, instructions, filePath) {
-  assistantID = await createAssistant(name, instructions);  // Create an assistant using the params
-  fileID = await createFile(filePath);                      // Create a file from param path
+  assistantID = await createAssistant(name, instructions);  // Create an assistant using the parameters
+  fileID = await createFile(filePath);                      // Create a file from parameters path
   await uploadFile(assistantID, fileID);                    // Attach this file and assistant
   console.log(assistantID);                                 // Log the new assistant's ID
 }
@@ -70,7 +99,7 @@ async function createAssistant(name, instructions) {
     model: "gpt-4-turbo-preview",                 // OpenAI model the assistant is based on
   });
 
-  console.log(myAssistant);                       // Log the assistant information
+  console.log(myAssistant.id);                       // Log the assistant information
   return myAssistant.id;                          // returns the assistants id
 }
 
@@ -82,7 +111,7 @@ async function createFile(path) {
     file: fs.createReadStream(path),              // The file found at the path String parameter
     purpose: 'assistants',                        // Purpose is either 'fine-tuning' or 'assistants'
   });
-  console.log(file);                              // Log the file information
+  console.log(file.id);                              // Log the file information
   return file.id;                                 // the file id is returned
 }
 
@@ -104,6 +133,13 @@ async function listFiles() {
 async function deleteAssistant(assistantID) {
   await openai.beta.assistants.del(assistantID);  // Delete assistant with the passed ID parameter
   console.log("Deleted "+assistantID);            // Log the deletion
+}
+
+async function deleteFile(assistantID, fileID) {
+  // await openai.beta.assistants.files.del(assistantID, fileID);
+  // console.log("Deleted "+fileID+" from "+assistantID);
+  await openai.files.del(fileID);
+  console.log("Deleted "+fileID);
 }
 
 main();
