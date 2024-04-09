@@ -17,7 +17,7 @@ const InputOutputBox = () => {
     // Function to initialize a new thread
     const initNewThread = async () => {
       try {
-        const response = await fetch('http://130.162.160.119:3001/new-thread', {
+        const response = await fetch('https://sweng27.csproject.org/new-thread', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ const InputOutputBox = () => {
   }, []);
 
   useEffect(() => { //If console gives error here run "npm update openai"
-    const eventSource = new EventSource('http://130.162.160.119:3001/stream');
+    const eventSource = new EventSource('https://sweng27.csproject.org/stream');
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
@@ -78,7 +78,7 @@ const InputOutputBox = () => {
     }
 
     // Send the user message to the server using a POST request
-    fetch('http://130.162.160.119:3001/chat', {
+    fetch('https://sweng27.csproject.org/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
