@@ -1,56 +1,63 @@
 :root {
-    --light-blue: rgb(61, 219, 219);
-    --pink: #E24ED2;
-    --black: #3A3A3A;
-    --text:rgb(236, 236, 236); 
+  --light-blue: rgb(61, 219, 219);
+  --pink: #E24ED2;
+  --black: #3A3A3A;
+  --text:rgb(236, 236, 236); 
 }
 
 .slider {
-  margin: 17px;
-  background-color: var(--text);
-  border-radius: 10px;
-  height: 5px;
-  position: relative;
+margin: 17px;
+background-color: var(--text);
+border-radius: 10px;
+height: 5px;
+position: relative;
 }
 
 
 .thumb {
-  background-color: var(--text);
-  border: 2px solid var(--black);
-  height: 20px;
-  width: 20px;
-  border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  outline: none;
+background-color: var(--pink);
+border: 2px solid var(--text);
+height: 15px;
+width: 15px;
+border-radius: 50%;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+position: absolute;
+cursor: pointer;
+outline: none;
+top: 50%;
+transform: translateY(-45%);
 }
 
 .thumb:hover,
 .thumb:active {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .track {
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: transparent;
-  position: absolute;
-  border-radius: 10px;
-  height: 5px;
+background-color: var(--text);
+position: absolute;
+border-radius: 10px;
+height: 3px;
 }
 
-.track-1{
-  background-color: var(--pink);
+.mark{
+position: absolute;
+width: 5px;
+height: 5px; 
+background-color: var(--pink); 
+margin-left: 7px;
+border-radius: 50%;
+top: 50%;
+transform: translateY(-50%);
 }
 
-.age-display input {
-  border: 1px solid var(--black);
-  border-radius: 5px;
-  padding: 5px;
-  margin-top: 7px;
-  font-size: 1rem;
+.labels {
+display: flex;
+justify-content: space-between;
+position: absolute;
+width: 90%;
+left: 5%;
+top: 23%;
+font-size: 15px;
+color: var(--text);
 }
-

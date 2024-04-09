@@ -6,10 +6,6 @@ import AgeSlider from "./menu-components/Slider";
 import GenderSelection from "./menu-components/Radio.jsx";
 import Select from "./menu-components/Select.jsx";
 
-/* to do next:
-sending data
-*/
-
 function Menu({setAssistantID, setFileID}) {
     const [open, setOpen] = useState(false);
 

@@ -53,9 +53,11 @@ app.get('/stream', (req, res) => {
 app.use(bodyParser.json());
 app.use(cors());
 
-// Assign the ID of the target assistant. This is a hard coded global variable.
+// Assign the ID of the target assistant for unit tests. This is a hard coded global variable.
 // Assistants can be created, deleted etc. from the assistant-editor.js file.
 const assistantID = 'asst_oANbAY9nu3G4i5ySHABCLUIB';
+
+let relevantAssistantID, relevantFileID, relevantFileResponses;
 
 
 // This post request is used to create a new thread. It is called
