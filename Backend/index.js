@@ -8,7 +8,7 @@ const FILE_ID_STORE = require('./file-id-array.js');
 const CONSTANTS = require('./constants.js');
 
 const corsOptions = {
-  origin: 'http://localhost:5173', // or use '*' to allow any origin
+  origin: '*', // or use '*' to allow any origin
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   credentials: true, // to allow cookies to be sent with the request
 };
