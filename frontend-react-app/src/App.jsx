@@ -107,7 +107,7 @@ const InputOutputBox = () => {
       <div className="container-page">
         <ChatWindow messages={messages} isLoading={isLoading}/>
         <AiAvatar />
-        <Menu/>
+        <Menu setAssistantID={setAssistantID} setFileID={setFileID}/>
       </div>
       <ChatInput onSubmit={handleMessageSubmit} />
   </body>

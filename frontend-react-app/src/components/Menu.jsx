@@ -5,13 +5,12 @@ import settIcon from '../imgs/setting.png';
 import AgeSlider from "./menu-components/Slider";
 import GenderSelection from "./menu-components/Radio.jsx";
 import Select from "./menu-components/Select.jsx";
-import App from "../App.jsx";
 
 /* to do next:
 sending data
 */
 
-function Menu() {
+function Menu({setAssistantID, setFileID}) {
     const [open, setOpen] = useState(false);
 
     const handleDropdown = () => setOpen(!open);
@@ -19,14 +18,14 @@ function Menu() {
     return (
         <div className="menu-container">
             <button className="sett-button" onClick={handleDropdown}>Settings <img src={settIcon} className="sett-icon"/></button>
-            {open && <DropdownMenu onClose={handleDropdown} />}
+            {open && <DropdownMenu setAssistantID={setAssistantID} setFileID={setFileID} onClose={handleDropdown} />}
         </div>
     );
 }
 
-function DropdownMenu({ onClose }) {
+function DropdownMenu({ setFileID, onClose, setAssistantID }) {
 
-    const handleSend = async () => {
+    const handleSend = async (event) => {
         event.preventDefault(); // Prevent the form from causing a page reload
 
         const formData = new FormData(event.target);
@@ -38,7 +37,7 @@ function DropdownMenu({ onClose }) {
         // for selecting the correct fileID from a 3D array.
         // Check console logs in backend terminal to see what values are received on the backend from
         // this request
-        const response = fetch('http://localhost:3001/persona-data', {
+        const response = await fetch('http://localhost:3001/persona-data', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -46,8 +45,8 @@ function DropdownMenu({ onClose }) {
             body: JSON.stringify({ gender: gender, ageIndex: ageIndex, county: county}),
         });
         const data = await response.json();
-        // setAssistantID(data.assistantID);      // Thes lines needs to call setAssistantID() in App.jsx,
-        // setFileID(data.fileID);                // but I don't know how to access that variable
+        setAssistantID(data.assistantID);      // Thes lines needs to call setAssistantID() in App.jsx,
+        setFileID(data.fileID);                // but I don't know how to access that variable
 
         onClose();
     };
@@ -61,8 +60,8 @@ function DropdownMenu({ onClose }) {
             },
         });
         const data = await response.json();
-        // setAssistantID(data.assistantID);      // Thes lines needs to call setAssistantID() in App.jsx,
-        // setFileID(data.fileID);                // but I don't know how to access that variable
+        setAssistantID(data.assistacoolntID);      // Thes lines needs to call setAssistantID() in App.jsx,
+        setFileID(data.fileID);                // but I don't know how to access that variable
 
         onClose(); // Close the dropdown menu after reset
     };
