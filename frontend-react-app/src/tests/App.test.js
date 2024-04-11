@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
-import InputOutputBox from './InputOutputBox';
+import InputOutputBox from '../App.jsx';
 
 describe('InputOutputBox component', () => {
   it('renders without crashing', () => {
