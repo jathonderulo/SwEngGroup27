@@ -1,7 +1,14 @@
 module.exports = {
-    "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/fileMock.js",
-      "\\.(scss|sass|css)$": "identity-obj-proxy"
-    },
-    testEnvironment: 'jsdom'
-  }
+  // Other Jest configuration options...
+  transformIgnorePatterns: [
+    "/node_modules/",
+    "\\.pnp\\.[^\\\/]+$",
+    "\\.css$",
+    "\\.(jpg|jpeg|png|gif|svg)$" // Add this line to ignore image files
+  ],
+  moduleNameMapper: {
+    "\\.(css|less|sass|scss)$": "identity-obj-proxy",
+    "\\.(jpg|jpeg|png|gif|svg)$": "<rootDir>/src/__mocks__/mockFile.js" // Map image imports to a mock file
+  },
+  testEnvironment: "jsdom"
+};
